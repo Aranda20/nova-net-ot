@@ -7,6 +7,22 @@
     <!-- Tailwind CSS para diseño moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @keyframes pulseHighlight {
+            0% { background-color: rgba(20, 184, 166, 0.25); transform: scale(1.01); }
+            100% { background-color: #f8fafc; transform: scale(1); }
+        }
+        .macro-active {
+            animation: pulseHighlight 0.6s ease-out forwards;
+        }
+        
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .toast-animate {
+            animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         @media print {
             body { background-color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
@@ -18,16 +34,28 @@
             background-color: #f8fafc;
             touch-action: none;
             cursor: crosshair;
+            transition: all 0.2s ease;
+        }
+        .signature-canvas:hover {
+            border-color: #0d9488;
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased font-sans">
+<body class="bg-slate-100 text-slate-800 antialiased font-sans relative">
+
+    <!-- NOTIFICACIÓN DE TOAST (ANIMACIÓN AL CARGAR MACROS) -->
+    <div id="toastNotification" class="fixed top-16 right-5 z-50 hidden no-print">
+        <div id="toastContent" class="flex items-center space-x-3 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl border border-slate-700 toast-animate">
+            <span id="toastIcon">✨</span>
+            <span id="toastMessage">Plantilla cargada con éxito</span>
+        </div>
+    </div>
 
     <!-- BARRA SUPERIOR DE ACCIONES Y MACROS -->
-    <header class="no-print bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <header class="no-print bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-md">
         <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="bg-teal-500 text-white p-2 rounded-lg shadow-inner">
+                <div class="bg-teal-500 text-white p-2 rounded-lg shadow-inner transform hover:rotate-6 transition duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -40,16 +68,16 @@
 
             <!-- Botones de Macros y Acciones -->
             <div class="flex flex-wrap items-center gap-2">
-                <button onclick="cargarPreventivo()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3 py-2 rounded-md shadow transition flex items-center space-x-1">
+                <button onclick="cargarPreventivo()" class="bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow transition-all duration-200 flex items-center space-x-1.5">
                     <span>🛡️ Cargar Preventivo</span>
                 </button>
-                <button onclick="cargarCorrectivo()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-md shadow transition flex items-center space-x-1">
+                <button onclick="cargarCorrectivo()" class="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow transition-all duration-200 flex items-center space-x-1.5">
                     <span>🛠️ Cargar Correctivo</span>
                 </button>
-                <button onclick="limpiarFormulario()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold px-3 py-2 rounded-md shadow transition flex items-center space-x-1">
+                <button onclick="limpiarFormulario()" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow transition-all duration-200 flex items-center space-x-1.5">
                     <span>🔄 Limpiar</span>
                 </button>
-                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-md shadow transition flex items-center space-x-1">
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow transition-all duration-200 flex items-center space-x-1.5">
                     <span>🖨️ Exportar / Imprimir PDF</span>
                 </button>
             </div>
@@ -58,12 +86,12 @@
 
     <!-- CONTENEDOR PRINCIPAL DE LA ORDEN -->
     <main class="max-w-5xl mx-auto px-4 py-8">
-        <form id="orderForm" class="bg-white rounded-xl shadow-lg border border-slate-200 print-shadow overflow-hidden p-6 md:p-10 space-y-8">
+        <form id="orderForm" class="bg-white rounded-xl shadow-xl border border-slate-200 print-shadow overflow-hidden p-6 md:p-10 space-y-8 transition-all">
 
             <!-- ENCABEZADO INSTITUCIONAL -->
             <div class="border-b border-slate-200 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div class="flex items-center space-x-4">
-                    <div class="bg-teal-900 text-teal-300 p-3 rounded-xl shadow">
+                    <div class="bg-teal-900 text-teal-300 p-3.5 rounded-xl shadow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -89,7 +117,7 @@
 
             <!-- SECCIÓN I: INFORMACIÓN GENERAL -->
             <fieldset class="space-y-4">
-                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full flex justify-between items-center">
+                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full flex justify-between items-center shadow-sm">
                     <span>ℹ️ Sección I: Información General de la Orden</span>
                     <span class="text-[10px] font-normal text-teal-200">* campos requeridos</span>
                 </legend>
@@ -97,7 +125,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Mantenimiento *</label>
-                        <select id="tipoMantenimiento" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <select id="tipoMantenimiento" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                             <option value="">-- Seleccione --</option>
                             <option value="Preventivo">Preventivo</option>
                             <option value="Correctivo">Correctivo</option>
@@ -106,7 +134,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Prioridad del Servicio *</label>
-                        <select id="prioridadServicio" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <select id="prioridadServicio" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                             <option value="Baja">Baja</option>
                             <option value="Media" selected>Media</option>
                             <option value="Alta">Alta</option>
@@ -121,14 +149,14 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Fecha Programada Atención *</label>
-                        <input type="date" id="fechaProgramada" value="2026-10-23" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <input type="date" id="fechaProgramada" value="2026-10-23" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Seleccionar Técnico Asignado *</label>
-                        <select id="selectTecnico" onchange="actualizarDatosTecnico()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <select id="selectTecnico" onchange="actualizarDatosTecnico()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                             <option value="1" selected>1 - Dairon Andrey Aranda</option>
                             <option value="2">2 - Juan Miguel Fernandez Palta</option>
                             <option value="3">3 - Juan Andrés Galindez</option>
@@ -151,14 +179,14 @@
 
             <!-- SECCIÓN II: UBICACIÓN Y DESCRIPCIÓN -->
             <fieldset class="space-y-4">
-                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full">
+                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full shadow-sm">
                     📍 Sección II: Ubicación y Descripción del Evento
                 </legend>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Departamento *</label>
-                        <select id="departamento" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <select id="departamento" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                             <option value="Cauca" selected>Cauca</option>
                             <option value="Valle del Cauca">Valle del Cauca</option>
                             <option value="Nariño">Nariño</option>
@@ -169,12 +197,12 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Municipio *</label>
-                        <input type="text" id="municipio" placeholder="Ej. Piendamó, Popayán, Timbío" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <input type="text" id="municipio" placeholder="Ej. Piendamó, Popayán, Timbío" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Sitio Específico / Nodo *</label>
-                        <input type="text" id="sitioNodo" placeholder="Ej. Colegio Madre de Dios, Museo de Historia" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <input type="text" id="sitioNodo" placeholder="Ej. Colegio Madre de Dios, Museo de Historia" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                     </div>
                 </div>
 
@@ -182,54 +210,54 @@
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-bold text-slate-700">Descripción del Problema o Mantenimiento Programado *</label>
                         <div class="space-x-2">
-                            <button type="button" onclick="cargarPreventivo()" class="no-print text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded">+ Texto Preventivo</button>
-                            <button type="button" onclick="cargarCorrectivo()" class="no-print text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded">+ Texto Correctivo</button>
+                            <button type="button" onclick="cargarPreventivo()" class="no-print text-[10px] bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 px-2 py-0.5 rounded transition">+ Texto Preventivo</button>
+                            <button type="button" onclick="cargarCorrectivo()" class="no-print text-[10px] bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 px-2 py-0.5 rounded transition">+ Texto Correctivo</button>
                         </div>
                     </div>
-                    <textarea id="descripcionProblema" rows="3" placeholder="Escriba la descripción detallada del trabajo a realizar o el reporte inicial del fallo..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
+                    <textarea id="descripcionProblema" rows="3" placeholder="Escriba la descripción detallada del trabajo a realizar o el reporte inicial del fallo..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition"></textarea>
                 </div>
             </fieldset>
 
             <!-- SECCIÓN III: ASIGNACIÓN Y LOGÍSTICA -->
             <fieldset class="space-y-4">
-                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full">
+                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full shadow-sm">
                     ⚙️ Sección III: Asignación, Logística e Insumos
                 </legend>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Tiempo Estimado de Ejecución (Horas)</label>
-                        <input type="number" id="tiempoEstimado" value="4" min="1" max="72" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <input type="number" id="tiempoEstimado" value="4" min="1" max="72" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Materiales e Insumos Ópticos / Eléctricos a Utilizar</label>
-                        <input type="text" id="materiales" placeholder="Ej. Alcohol isopropílico, Conectores SC/APC, Amarras" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <input type="text" id="materiales" placeholder="Ej. Alcohol isopropílico, Conectores SC/APC, Amarras" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Observaciones Técnicas del Diagnóstico y Resultado Final</label>
-                    <textarea id="observaciones" rows="3" placeholder="Describa las pruebas de potencia óptica (Medidor VFL / PON), resultados y normalización..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
+                    <textarea id="observaciones" rows="3" placeholder="Describa las pruebas de potencia óptica (Medidor VFL / PON), resultados y normalización..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none transition"></textarea>
                 </div>
             </fieldset>
 
             <!-- SECCIÓN IV: FIRMAS DIGITALES -->
             <fieldset class="space-y-4 pt-2">
-                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full">
+                <legend class="bg-teal-800 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md w-full shadow-sm">
                     ✍️ Sección IV: Confirmación y Firmas Digitales
                 </legend>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     <!-- Firma Técnico -->
-                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50 text-center">
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50 text-center shadow-sm">
                         <label class="block text-xs font-bold text-slate-700 mb-2">Firma del Técnico Ejecutante</label>
                         <canvas id="canvasTecnico" width="380" height="140" class="signature-canvas mx-auto rounded-md shadow-inner w-full"></canvas>
                         <button type="button" onclick="limpiarCanvas('canvasTecnico')" class="no-print mt-2 text-[11px] text-red-600 hover:underline font-semibold">Limpiar Firma Técnico</button>
                     </div>
 
                     <!-- Firma Supervisor / Cliente -->
-                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50 text-center">
+                    <div class="border border-slate-200 rounded-lg p-4 bg-slate-50 text-center shadow-sm">
                         <label class="block text-xs font-bold text-slate-700 mb-2">Firma del Supervisor / Cliente (Conformidad)</label>
                         <canvas id="canvasCliente" width="380" height="140" class="signature-canvas mx-auto rounded-md shadow-inner w-full"></canvas>
                         <button type="button" onclick="limpiarCanvas('canvasCliente')" class="no-print mt-2 text-[11px] text-red-600 hover:underline font-semibold">Limpiar Firma Cliente</button>
@@ -241,7 +269,7 @@
             <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
                 <p>NOVA NET S.A.S. — Sistema Integrado de Gestión de Operaciones de Red</p>
                 <div class="no-print flex space-x-3">
-                    <button type="button" onclick="window.print()" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-md shadow transition">
+                    <button type="button" onclick="window.print()" class="bg-teal-700 hover:bg-teal-800 active:scale-95 text-white font-bold px-5 py-2.5 rounded-md shadow transition">
                         🖨️ Imprimir / Guardar PDF Oficial
                     </button>
                 </div>
@@ -250,7 +278,7 @@
         </form>
     </main>
 
-    <!-- SCRIPT DE FUNCIONALIDAD, MACROS Y FIRMAS -->
+    <!-- SCRIPT DE FUNCIONALIDAD, MACROS CON ANIMACIONES Y FIRMAS -->
     <script>
         const tecnicosDB = {
             "1": { nombre: "Dairon Andrey Aranda", cargo: "Tecnólogo en Telecomunicaciones" },
@@ -259,6 +287,34 @@
             "4": { nombre: "Kevin Alexis Gonzales", cargo: "Tecnólogo en Telecomunicaciones" },
             "5": { nombre: "Adriana Samboni Cortéz", cargo: "Ingeniero en Redes de Telecomunicaciones" }
         };
+
+        function mostrarToast(icono, mensaje) {
+            const toast = document.getElementById("toastNotification");
+            document.getElementById("toastIcon").innerText = icono;
+            document.getElementById("toastMessage").innerText = mensaje;
+            
+            toast.classList.remove("hidden");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 2500);
+        }
+
+        function aplicarAnimaciones() {
+            const campos = [
+                'tipoMantenimiento', 'prioridadServicio', 'municipio', 
+                'sitioNodo', 'descripcionProblema', 'tiempoEstimado', 
+                'materiales', 'observaciones'
+            ];
+            
+            campos.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.remove('macro-active');
+                    void el.offsetWidth; // Trigger reflow para reiniciar la animación
+                    el.classList.add('macro-active');
+                }
+            });
+        }
 
         function actualizarDatosTecnico() {
             const val = document.getElementById("selectTecnico").value;
@@ -278,6 +334,9 @@
             document.getElementById("tiempoEstimado").value = "4";
             document.getElementById("materiales").value = "Alcohol isopropílico al 99%, Paños lint-free, Amarras plásticas, Etiquetas normadas TIA-606";
             document.getElementById("observaciones").value = "Se realiza inspección visual y física comprobando el cumplimiento de radios de curvatura según norma ITU-T G.657. Limpieza de férulas y adaptadores ópticos obteniendo lecturas de potencia estables dentro del rango óptimo.";
+            
+            aplicarAnimaciones();
+            mostrarToast("🛡️", "Macro Preventivo Cargada");
         }
 
         function cargarCorrectivo() {
@@ -289,6 +348,9 @@
             document.getElementById("tiempoEstimado").value = "2";
             document.getElementById("materiales").value = "Conector mecánico óptico SC/APC (1 unidad), Alcohol isopropílico al 99%, Paños libres de pelusa";
             document.getElementById("observaciones").value = "Se realiza diagnóstico mediante VFL y medidor de potencia óptica, confirmando rotura en férula del conector SC/APC. Se procede al corte, preparación de fibra, conectorización mecánica de reemplazo, limpieza profunda y validación final de potencia.";
+            
+            aplicarAnimaciones();
+            mostrarToast("🛠️", "Macro Correctivo Cargada");
         }
 
         function limpiarFormulario() {
@@ -297,6 +359,7 @@
             document.getElementById("cargoTecnico").value = "Tecnólogo en Telecomunicaciones";
             limpiarCanvas('canvasTecnico');
             limpiarCanvas('canvasCliente');
+            mostrarToast("🔄", "Formulario Reiniciado");
         }
 
         // Configuración de Canvas para Firmas Táctiles y Mouse
