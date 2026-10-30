@@ -32,7 +32,6 @@
         }
     </script>
     <style>
-        /* Estilos específicos para Impresión / Exportación PDF */
         @media print {
             body {
                 background: white !important;
@@ -47,9 +46,6 @@
             }
             .print-shadow-none {
                 box-shadow: none !important;
-            }
-            .page-break {
-                page-break-before: always;
             }
             textarea {
                 border: 1px solid #cbd5e1 !important;
@@ -66,8 +62,6 @@
                 border: 1px dashed #64748b !important;
             }
         }
-
-        /* Estilo personalizado de canvas para firmas */
         .signature-canvas {
             touch-action: none;
             cursor: crosshair;
@@ -93,14 +87,14 @@
 
             <!-- Botonera de Plantillas y Acciones -->
             <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="cargarNuevoEstudioCaso()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-hospital"></i>
+                    <span>Cargar Estudio de Caso (Hospital)</span>
+                </button>
+
                 <button type="button" onclick="cargarPlantillaPreventiva()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-shield-halved"></i>
                     <span>Cargar Preventivo</span>
-                </button>
-
-                <button type="button" onclick="cargarPlantillaCorrectiva()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-wrench"></i>
-                    <span>Cargar Correctivo</span>
                 </button>
 
                 <button type="button" onclick="limpiarFormulario()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
@@ -108,9 +102,14 @@
                     <span>Limpiar</span>
                 </button>
 
+                <button type="button" onclick="exportarExcel()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Convertir a Excel</span>
+                </button>
+
                 <button type="button" onclick="exportarPDF()" class="bg-brand-500 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-md">
                     <i class="fa-solid fa-file-pdf"></i>
-                    <span>Exportar / Imprimir PDF</span>
+                    <span>Imprimir / PDF</span>
                 </button>
             </div>
         </div>
@@ -121,7 +120,6 @@
             <!-- ENCABEZADO INSTITUCIONAL -->
             <div class="border-b-2 border-brand-800 pb-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                    <!-- Logo / Nombre Empresa -->
                     <div class="flex items-center space-x-3 md:col-span-1">
                         <div class="bg-brand-900 text-white p-3 rounded-xl flex items-center justify-center">
                             <i class="fa-solid fa-wifi text-3xl"></i>
@@ -133,21 +131,20 @@
                         </div>
                     </div>
 
-                    <!-- Título Formato -->
                     <div class="text-center md:col-span-2">
                         <h1 class="text-lg sm:text-xl font-bold text-slate-800 uppercase tracking-wide">
                             ORDEN DE TRABAJO DE MANTENIMIENTO DE TELECOMUNICACIONES
                         </h1>
                         <p class="text-xs text-slate-500 font-mono mt-1">
-                            Código: <span class="font-semibold text-slate-700">NOVANET-FO-OT-001</span> | Versión: 03 | Fecha de Vigencia: 2026
+                            Código: <span class="font-semibold text-slate-700">NOVANET-FO-OT-001</span> | Versión: 03 | Vigencia: 2026
                         </p>
                     </div>
 
-                    <!-- Código de Orden / Fecha Autogenerada -->
                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-right md:col-span-1">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase">N° Orden de Trabajo</label>
-                        <input type="text" id="numOrden" class="text-base font-bold text-brand-900 bg-transparent text-right w-full focus:outline-none" readonly value="OT-2026-001">
-                        <span id="badgeEstado" class="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-100 text-blue-800">En Progreso</span>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase">N° Control / Folio</label>
+                        <input type="text" id="numOrden" class="text-sm font-bold text-brand-900 bg-transparent text-right w-full focus:outline-none" readonly value="OT-FO-C-2026-089">
+                        <input type="text" id="folioSolicitud" class="text-[11px] text-slate-600 bg-transparent text-right w-full focus:outline-none font-mono" readonly value="Folio: SOL-2026-089">
+                        <span id="badgeEstado" class="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-100 text-blue-800">Abierta</span>
                     </div>
                 </div>
             </div>
@@ -156,252 +153,236 @@
             <div class="space-y-3">
                 <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
                     <span><i class="fa-solid fa-circle-info mr-1.5"></i> Sección I: Información General de la Orden</span>
-                    <span class="text-[10px] font-normal lowercase opacity-80">* Campos requeridos</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <!-- Tipo Mantenimiento -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Mantenimiento *</label>
                         <select id="tipoMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="">-- Seleccione --</option>
+                            <option value="Correctivo" selected>Correctivo</option>
                             <option value="Preventivo">Preventivo</option>
-                            <option value="Correctivo">Correctivo</option>
-                            <option value="Instalación/Adecuación">Instalación / Adecuación</option>
-                            <option value="Emergencia">Emergencia Técnica</option>
                         </select>
                     </div>
 
-                    <!-- Prioridad -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Prioridad del Servicio *</label>
-                        <select id="prioridad" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="Baja">Baja</option>
-                            <option value="Media" selected>Media</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Crítica / Emergencia">Crítica / Emergencia</option>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Red / Área *</label>
+                        <select id="tipoRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Fibra Óptica" selected>Fibra Óptica</option>
+                            <option value="UTP">UTP</option>
+                            <option value="Coaxial">Coaxial</option>
                         </select>
                     </div>
 
-                    <!-- Fecha Emisión -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Emisión</label>
-                        <input type="datetime-local" id="fechaEmision" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación de la Red *</label>
+                        <select id="ubicacionRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Interna" selected>Interna</option>
+                            <option value="Externa">Externa</option>
+                        </select>
                     </div>
 
-                    <!-- Fecha Programada -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha Programada Atención *</label>
-                        <input type="date" id="fechaProgramada" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Clasificación Mantenimiento *</label>
+                        <select id="clasificacionMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Mayor" selected>Mayor (Intervención de Enlace Óptico)</option>
+                            <option value="Menor">Menor</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Personal Encargado (Desplegable Dinámico) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Emisión</label>
+                        <input type="text" id="fechaEmision" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-mono" readonly value="28/10/2026">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha Programada Atención *</label>
+                        <input type="text" id="fechaProgramada" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" value="28/10/2026 (Ventana Nocturna 01:00 a.m.)" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Estado de la Orden *</label>
+                        <select id="estadoOrden" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Abierta" selected>Abierta</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Seleccionar Técnico Asignado *</label>
                         <select id="selectTecnico" onchange="actualizarDatosTecnico()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="">-- Seleccionar Personal --</option>
-                            <option value="1" selected>1 - Dairon Andrey Aranda</option>
-                            <option value="2">2 - Juan Miguel Fernandez Palta</option>
-                            <option value="3">3 - Juan Andrés Galindez</option>
-                            <option value="4">4 - Kevin Alexis Gonzales</option>
-                            <option value="5">5 - Adriana Samboni Cortéz</option>
+                            <option value="1" selected>1 - Dairon Andrey Aranda (Tecnólogo Telecomunicaciones)</option>
+                            <option value="2">2 - Juan Miguel Fernandez Palta (Ingeniero Redes)</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Técnico Responsable</label>
-                        <input type="text" id="nombreTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly placeholder="Autocompletado automáticamente">
+                        <input type="text" id="nombreTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly value="Dairon Andrey Aranda">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Cargo / Especialidad</label>
-                        <input type="text" id="cargoTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly placeholder="Autocompletado automáticamente">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Celular / Contacto</label>
+                        <input type="text" id="celularTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly value="3000000001">
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN II: UBICACIÓN Y DESCRIPCIÓN -->
+            <!-- SECCIÓN II: UBICACIÓN Y DIAGNÓSTICO -->
             <div class="space-y-3">
                 <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
-                    <span><i class="fa-solid fa-location-dot mr-1.5"></i> Sección II: Ubicación y Descripción del Evento</span>
+                    <span><i class="fa-solid fa-location-dot mr-1.5"></i> Sección II: Ubicación y Diagnóstico del Evento</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Departamento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Departamento *</label>
-                        <select id="departamento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="Cauca" selected>Cauca</option>
-                            <option value="Valle del Cauca">Valle del Cauca</option>
-                            <option value="Nariño">Nariño</option>
-                            <option value="Antioquia">Antioquia</option>
-                            <option value="Cundinamarca">Cundinamarca</option>
-                            <option value="Huila">Huila</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lugar del Trabajo (Sitio) *</label>
+                        <input type="text" id="lugarTrabajo" value="Hospital Regional San José, Cuarto de Equipos Principal (Sótano) y Central de Admisiones (Piso 1)" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
                     </div>
 
-                    <!-- Municipio -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Municipio *</label>
-                        <input type="text" id="municipio" placeholder="Ej. Piendamó, Popayán, Timbío" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                    </div>
-
-                    <!-- Sitio Específico -->
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sitio Específico / Nodo *</label>
-                        <input type="text" id="sitioEspecifico" placeholder="Ej. Colegio Madre de Dios, Museo de Historia Natural" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Proveedor Externo (Si aplica)</label>
+                        <input type="text" id="proveedorExterno" value="No aplica (Personal Interno NOVA NET)" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     </div>
                 </div>
 
-                <!-- Descripción del Problema / Trabajo -->
                 <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label class="block text-xs font-semibold text-slate-700">Descripción del Problema o Mantenimiento Programado *</label>
-                        <div class="no-print space-x-1">
-                            <button type="button" onclick="insertarPlantillaTexto('prev')" class="text-[11px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded transition">
-                                + Texto Preventivo
-                            </button>
-                            <button type="button" onclick="insertarPlantillaTexto('corr')" class="text-[11px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded transition">
-                                + Texto Correctivo
-                            </button>
-                        </div>
-                    </div>
-                    <textarea id="descripcionProblema" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="Escriba la descripción detallada del trabajo a realizar o el reporte inicial del fallo..." required></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Diagnóstico del Mantenimiento *</label>
+                    <textarea id="diagnosticoMantenimiento" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>Alarma crítica de pérdida parcial de enlace óptico en el sistema de historias clínicas del hospital. La medición con medidor de potencia refleja una atenuación de -28.5 dBm, causada por macrocurvatura severa y acumulación de polvo en el ODF principal del sótano.</textarea>
                 </div>
             </div>
 
-            <!-- SECCIÓN III: LOGÍSTICA, MATERIALES Y RECURSOS -->
+            <!-- SECCIÓN III: ACTIVIDADES Y MATERIALES -->
             <div class="space-y-3">
                 <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
-                    <span><i class="fa-solid fa-boxes-packing mr-1.5"></i> Sección III: Logística y Materiales Utilizados</span>
+                    <span><i class="fa-solid fa-boxes-packing mr-1.5"></i> Sección III: Actividades Realizadas y Recursos</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tiempo Estimado (Horas) *</label>
-                        <input type="number" id="tiempoEstimado" min="0.5" step="0.5" placeholder="Ej. 2.5" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Estado Final de la Red</label>
-                        <select id="estadoRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                            <option value="Operativo 100%">Operativo 100%</option>
-                            <option value="Operativo Degradado">Operativo Degradado</option>
-                            <option value="Fuera de Servicio">Fuera de Servicio</option>
-                            <option value="Pendiente Repuestos">Pendiente Repuestos</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nivel de Potencia Óptica (dBm)</label>
-                        <input type="text" id="potenciaOptica" placeholder="Ej. -18.5 dBm (RX)" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- Materiales Utilizados - Selección Interactiva de Checkboxes -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales / Insumos Utilizados (Marque los aplicables):</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Conectores SC/APC" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Conectores SC/APC</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Alcohol Isopropílico 99%" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Alcohol Isopropílico 99%</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Paños sin pelusa" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Paños sin pelusa</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Cable Drop Fibra G.657A" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Cable Drop Fibra</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Mangas de Empalme (Fusión)" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Mangas de Empalme</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Amarras/Velcro" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Amarras/Velcro</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Etiquetas ANSI/TIA-606-C" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Etiquetas ANSI/TIA-606-C</span>
-                        </label>
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" name="materiales" value="Contenedor de fibra" class="rounded text-brand-600 focus:ring-brand-500">
-                            <span>Contenedor de fibra</span>
-                        </label>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Actividades Realizadas *</label>
+                    <textarea id="actividadesRealizadas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm (dentro del rango operativo estándar).</textarea>
                 </div>
 
-                <!-- Observaciones Adicionales / Diagnóstico Técnico -->
+                <!-- Tabla de Materiales del Nuevo Estudio de Caso -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones Adicionales y Procedimiento Realizado *</label>
-                    <textarea id="observacionesTecnicas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" placeholder="Escriba los procedimientos efectuados, mediciones con OTDR/VFL o recomendaciones adicionales..." required></textarea>
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales y Herramientas Utilizados (Estudio de Caso Hospital):</label>
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Tipo</th>
+                                    <th class="p-2.5">Descripción</th>
+                                    <th class="p-2.5 text-center">Cantidad</th>
+                                    <th class="p-2.5 text-center">Unidad</th>
+                                    <th class="p-2.5">Origen</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="p-2.5 font-medium">Material</td>
+                                    <td class="p-2.5">Alcohol Isopropílico 99% (Frasco)</td>
+                                    <td class="p-2.5 text-center font-bold">1</td>
+                                    <td class="p-2.5 text-center">und</td>
+                                    <td class="p-2.5 text-slate-500">Catálogo</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-medium">Material</td>
+                                    <td class="p-2.5">Paños libres de pelusa (Lint-free wipes)</td>
+                                    <td class="p-2.5 text-center font-bold">1</td>
+                                    <td class="p-2.5 text-center">paquete</td>
+                                    <td class="p-2.5 text-slate-500">Catálogo</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-medium">Material</td>
+                                    <td class="p-2.5">Conector Mecánico Óptico SC/APC de repuesto</td>
+                                    <td class="p-2.5 text-center font-bold">2</td>
+                                    <td class="p-2.5 text-center">und</td>
+                                    <td class="p-2.5 text-slate-500">Catálogo</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-medium">Herramienta</td>
+                                    <td class="p-2.5">Medidor de Potencia Óptica (Power Meter / VFL)</td>
+                                    <td class="p-2.5 text-center font-bold">1</td>
+                                    <td class="p-2.5 text-center">und</td>
+                                    <td class="p-2.5 text-slate-500">Catálogo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN IV: CONFIRMACIÓN Y FIRMAS DIGITALES -->
+            <!-- SECCIÓN IV: FIRMAS DIGITALES -->
             <div class="space-y-3 pt-2">
                 <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
-                    <span><i class="fa-solid fa-signature mr-1.5"></i> Sección IV: Confirmación y Firmas Digitales</span>
+                    <span><i class="fa-solid fa-signature mr-1.5"></i> Sección IV: Autorización y Firmas Digitales</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Firma del Técnico -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Firma Técnico -->
                     <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <label class="text-xs font-bold text-slate-700">Firma Técnico Responsable</label>
-                                <button type="button" onclick="limpiarCanvas('canvasTecnico')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">
-                                    <i class="fa-solid fa-eraser mr-1"></i>Limpiar Firma
-                                </button>
+                                <label class="text-xs font-bold text-slate-700">Técnico Ejecutante</label>
+                                <button type="button" onclick="limpiarCanvas('canvasTecnico')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
                             </div>
                             <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
-                                <canvas id="canvasTecnico" width="400" height="120" class="w-full h-28 signature-canvas"></canvas>
+                                <canvas id="canvasTecnico" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
                             </div>
                         </div>
                         <div class="mt-3 pt-2 border-t border-slate-200 text-center">
                             <p id="firmaNombreTecnico" class="text-xs font-bold text-slate-800">Dairon Andrey Aranda</p>
-                            <p id="firmaCargoTecnico" class="text-[11px] text-slate-500">Tecnólogo en Telecomunicaciones</p>
+                            <p class="text-[10px] text-slate-500">Tecnólogo en Telecomunicaciones</p>
                         </div>
                     </div>
 
-                    <!-- Firma del Cliente / Supervisor -->
+                    <!-- Autorización Jefe -->
                     <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <label class="text-xs font-bold text-slate-700">Firma Recibido (Cliente / Supervisor)</label>
-                                <button type="button" onclick="limpiarCanvas('canvasCliente')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">
-                                    <i class="fa-solid fa-eraser mr-1"></i>Limpiar Firma
-                                </button>
+                                <label class="text-xs font-bold text-slate-700">Autorización (Jefe Operaciones)</label>
+                                <button type="button" onclick="limpiarCanvas('canvasJefe')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
                             </div>
                             <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
-                                <canvas id="canvasCliente" width="400" height="120" class="w-full h-28 signature-canvas"></canvas>
+                                <canvas id="canvasJefe" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200 text-center">
+                            <input type="text" id="nombreJefe" value="Ing. Roberto Benavides" class="w-full bg-transparent text-center text-xs font-bold text-slate-800 focus:outline-none">
+                            <p class="text-[10px] text-slate-500">Jefe de Infraestructura TIC</p>
+                        </div>
+                    </div>
+
+                    <!-- Cliente Hospital -->
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-700">Cliente Recibe (Hospital)</label>
+                                <button type="button" onclick="limpiarCanvas('canvasCliente')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
+                            </div>
+                            <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
+                                <canvas id="canvasCliente" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
                             </div>
                         </div>
                         <div class="mt-3 pt-2 border-t border-slate-200 space-y-1">
-                            <input type="text" id="nombreCliente" placeholder="Nombre completo del cliente / supervisor" class="w-full bg-transparent border-b border-slate-300 text-center text-xs font-bold text-slate-800 focus:outline-none">
-                            <input type="text" id="documentoCliente" placeholder="C.C. / Documento de Identidad" class="w-full bg-transparent text-center text-[11px] text-slate-500 focus:outline-none">
+                            <input type="text" id="nombreCliente" value="Dra. Marcela Hurtado (Admisiones)" class="w-full bg-transparent border-b border-slate-300 text-center text-xs font-bold text-slate-800 focus:outline-none">
+                            <input type="text" id="fechaTermino" value="Fecha término: 28/10/2026 03:15 a.m." class="w-full bg-transparent text-center text-[10px] text-slate-500 focus:outline-none">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Pie de Página Formato -->
             <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400">
-                <p>NOVA NET S.A.S. - Formato Virtual de Mantenimiento de Redes de Fibra Óptica e Infraestructura.</p>
-                <p>Documento generado digitalmente. Válido como soporte técnico de atención e intervención de campo.</p>
+                <p>NOVA NET S.A.S. — Sistema Integrado de Gestión de Órdenes de Mantenimiento Óptico.</p>
             </div>
         </form>
     </div>
 
-    <!-- Modal Notificación/Mensaje -->
+    <!-- Modal Notificación -->
     <div id="modalNotificacion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center no-print z-50">
         <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full text-center space-y-4 border border-slate-100">
             <div id="modalIcono" class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 mx-auto flex items-center justify-center text-xl">
@@ -417,225 +398,128 @@
 
     <!-- LOGICA Y SCRIPTS JAVASCRIPT -->
     <script>
-        // BD del Personal de Telecomunicaciones
         const personalTelecom = {
-            "1": { nombre: "Dairon Andrey Aranda", cargo: "Tecnólogo en Telecomunicaciones" },
-            "2": { nombre: "Juan Miguel Fernandez Palta", cargo: "Ingeniero en Redes" },
-            "3": { nombre: "Juan Andrés Galindez", cargo: "Técnico en Electricidad" },
-            "4": { nombre: "Kevin Alexis Gonzales", cargo: "Tecnólogo en Telecomunicaciones" },
-            "5": { nombre: "Adriana Samboni Cortéz", cargo: "Ingeniera de Sistemas / Redes" }
+            "1": { nombre: "Dairon Andrey Aranda", cargo: "Tecnólogo Telecomunicaciones", celular: "3000000001" },
+            "2": { nombre: "Juan Miguel Fernandez Palta", cargo: "Ingeniero Redes", celular: "3000000002" }
         };
 
-        // Inicialización al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
-            // Establecer fecha de emisión actual
-            const ahora = new Date();
-            const fechaLocal = new Date(ahora.getTime() - (ahora.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-            document.getElementById('fechaEmision').value = fechaLocal;
-
-            // Establecer fecha programada por defecto (hoy)
-            document.getElementById('fechaProgramada').value = ahora.toISOString().slice(0, 10);
-
-            // Cargar técnico por defecto (Dairon Andrey Aranda)
             actualizarDatosTecnico();
-
-            // Inicializar pads de firmas
             initSignatureCanvas('canvasTecnico');
+            initSignatureCanvas('canvasJefe');
             initSignatureCanvas('canvasCliente');
         });
 
-        // Actualizar datos del técnico seleccionado
         function actualizarDatosTecnico() {
             const select = document.getElementById('selectTecnico');
             const val = select.value;
-
             if (val && personalTelecom[val]) {
                 const tecnico = personalTelecom[val];
                 document.getElementById('nombreTecnico').value = tecnico.nombre;
-                document.getElementById('cargoTecnico').value = tecnico.cargo;
-
-                // Actualizar área de firma
+                document.getElementById('celularTecnico').value = tecnico.celular;
                 document.getElementById('firmaNombreTecnico').innerText = tecnico.nombre;
-                document.getElementById('firmaCargoTecnico').innerText = tecnico.cargo;
-            } else {
-                document.getElementById('nombreTecnico').value = "";
-                document.getElementById('cargoTecnico').value = "";
-                document.getElementById('firmaNombreTecnico').innerText = "________________________";
-                document.getElementById('firmaCargoTecnico').innerText = "Técnico Encargado";
             }
         }
 
-        // MACRO 1: Cargar Ejemplo Preventivo (Dairon Andrey Aranda)
-        function cargarPlantillaPreventiva() {
-            document.getElementById('numOrden').value = "OT-2026-PREV-014";
-            document.getElementById('tipoMantenimiento').value = "Preventivo";
-            document.getElementById('prioridad').value = "Media";
-            
-            // Técnico por defecto: Dairon Andrey Aranda
-            document.getElementById('selectTecnico').value = "1";
-            actualizarDatosTecnico();
-
-            document.getElementById('departamento').value = "Cauca";
-            document.getElementById('municipio').value = "Piendamó";
-            document.getElementById('sitioEspecifico').value = "Colegio Madre de Dios / Nodo Central NOVA NET";
-
-            document.getElementById('descripcionProblema').value = "Mantenimiento preventivo programado de la red de fibra óptica NOVA NET. Inspección de empalmes, peinado de hilos y limpieza de conectores ópticos en el rack de distribución.";
-
-            document.getElementById('tiempoEstimado').value = "3.0";
-            document.getElementById('estadoRed').value = "Operativo 100%";
-            document.getElementById('potenciaOptica').value = "-17.2 dBm (Óptimo)";
-
-            // Marcar checkboxes de materiales preventivos
-            marcarMateriales(['Alcohol Isopropílico 99%', 'Paños sin pelusa', 'Amarras/Velcro', 'Etiquetas ANSI/TIA-606-C']);
-
-            document.getElementById('observacionesTecnicas').value = "Se ejecutó la limpieza e inspección óptica con alcohol isopropílico 99% y paños sin pelusa en 24 conectores SC/APC. Rotulación actualizada según norma ANSI/TIA-606-C. Nivel de potencia estable en -17.2 dBm.";
-
-            document.getElementById('badgeEstado').innerText = "Completado";
-            document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-100 text-emerald-800";
-
-            mostrarModal("Ejemplo Preventivo Cargado", "Se ha cargado la plantilla de Mantenimiento PREVENTIVO con los datos de NOVA NET a cargo del técnico Dairon Andrey Aranda.", "fa-circle-check", "text-emerald-600 bg-emerald-100");
-        }
-
-        // MACRO 2: Cargar Ejemplo Correctivo (Falla de Luz / Conector SC/APC)
-        function cargarPlantillaCorrectiva() {
-            document.getElementById('numOrden').value = "OT-2026-CORR-089";
+        // MACRO: NUEVO ESTUDIO DE CASO (Hospital Regional San José)
+        function cargarNuevoEstudioCaso() {
+            document.getElementById('numOrden').value = "OT-FO-C-2026-089";
+            document.getElementById('folioSolicitud').value = "Folio: SOL-2026-089";
             document.getElementById('tipoMantenimiento').value = "Correctivo";
-            document.getElementById('prioridad').value = "Alta";
-            
-            // Técnico por defecto: Dairon Andrey Aranda
-            document.getElementById('selectTecnico').value = "1";
-            actualizarDatosTecnico();
-
-            document.getElementById('departamento').value = "Cauca";
-            document.getElementById('municipio').value = "Popayán";
-            document.getElementById('sitioEspecifico').value = "Museo de Historia Natural - Sector Centro";
-
-            document.getElementById('descripcionProblema').value = "Reporte de falla por pérdida total de luz (LOS) en enlace de fibra óptica hacia el sitio. Inspección inicial refleja atenuación excesiva en el conector de entrada.";
-
-            document.getElementById('tiempoEstimado').value = "2.5";
-            document.getElementById('estadoRed').value = "Operativo 100%";
-            document.getElementById('potenciaOptica').value = "-19.1 dBm";
-
-            // Marcar checkboxes de materiales correctivos
-            marcarMateriales(['Conectores SC/APC', 'Cable Drop Fibra G.657A', 'Mangas de Empalme (Fusión)', 'Contenedor de fibra']);
-
-            document.getElementById('observacionesTecnicas').value = "Mediante localizador visual de fallas (VFL) se detectó rotura interna en el conector mecánico. Se realizó sustitución del conector SC/APC y reempalme por fusión de la fibra. Potencia restablecida a parámetros óptimos (-19.1 dBm).";
-
-            document.getElementById('badgeEstado').innerText = "Completado";
+            document.getElementById('tipoRed').value = "Fibra Óptica";
+            document.getElementById('ubicacionRed').value = "Interna";
+            document.getElementById('clasificacionMantenimiento').value = "Mayor";
+            document.getElementById('fechaEmision').value = "28/10/2026";
+            document.getElementById('fechaProgramada').value = "28/10/2026 (Ventana Nocturna 01:00 a.m.)";
+            document.getElementById('estadoOrden').value = "Cerrada";
+            document.getElementById('badgeEstado').innerText = "Cerrada";
             document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-100 text-emerald-800";
 
-            mostrarModal("Ejemplo Correctivo Cargado", "Se ha cargado la plantilla de Mantenimiento CORRECTIVO por pérdida de luz en conector SC/APC.", "fa-wrench", "text-amber-600 bg-amber-100");
-        }
-
-        // Marcar checkboxes auxiliares
-        function marcarMateriales(listaMateriales) {
-            const checkboxes = document.querySelectorAll('input[name="materiales"]');
-            checkboxes.forEach(cb => {
-                cb.checked = listaMateriales.includes(cb.value);
-            });
-        }
-
-        // Plantillas rápidas de texto
-        function insertarPlantillaTexto(tipo) {
-            const area = document.getElementById('descripcionProblema');
-            if (tipo === 'prev') {
-                area.value = "Mantenimiento preventivo de red NOVA NET: Inspección de enlaces ópticos, verificación de tensiones en cableado aéreo, limpieza de conectores SC/APC y acondicionamiento de gabinetes.";
-            } else {
-                area.value = "Atención de evento correctivo: Reporte de alta atenuación en enlace principal. Se requiere diagnóstico con VFL/OTDR, localización del punto de falla y fusión/reparación de conector óptico.";
-            }
-        }
-
-        // MACRO 3: Limpiar Formulario
-        function limpiarFormulario() {
-            document.getElementById('formOrdenTrabajo').reset();
-            document.getElementById('numOrden').value = "OT-2026-" + Math.floor(100 + Math.random() * 900);
-            
-            // Restablecer técnico por defecto
             document.getElementById('selectTecnico').value = "1";
             actualizarDatosTecnico();
 
-            // Limpiar canvas de firmas
-            limpiarCanvas('canvasTecnico');
-            limpiarCanvas('canvasCliente');
+            document.getElementById('lugarTrabajo').value = "Hospital Regional San José, Cuarto de Equipos Principal (Sótano) y Central de Admisiones (Piso 1)";
+            document.getElementById('proveedorExterno').value = "No aplica (Personal Interno NOVA NET)";
+            document.getElementById('diagnosticoMantenimiento').value = "Alarma crítica de pérdida parcial de enlace óptico en el sistema de historias clínicas del hospital. La medición con medidor de potencia refleja una atenuación de -28.5 dBm, causada por macrocurvatura severa y acumulación de polvo en el ODF principal del sótano.";
+            document.getElementById('actividadesRealizadas').value = "1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm.";
 
-            // Restablecer fechas
-            const ahora = new Date();
-            const fechaLocal = new Date(ahora.getTime() - (ahora.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-            document.getElementById('fechaEmision').value = fechaLocal;
-            document.getElementById('fechaProgramada').value = ahora.toISOString().slice(0, 10);
-
-            document.getElementById('badgeEstado').innerText = "En Progreso";
-            document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-100 text-blue-800";
-
-            mostrarModal("Formulario Limpio", "Se han reiniciado todos los campos para el diligenciamiento de una nueva Orden de Trabajo para NOVA NET.", "fa-rotate-right", "text-slate-600 bg-slate-100");
+            mostrarModal("Nuevo Estudio de Caso Cargado", "Se han cargado los datos del caso: Hospital Regional San José (Folio SOL-2026-089).", "fa-hospital", "text-indigo-600 bg-indigo-100");
         }
 
-        // MACRO 4: Exportar PDF / Imprimir
+        function cargarPlantillaPreventiva() {
+            document.getElementById('numOrden').value = "OT-FO-P-2026-001";
+            document.getElementById('folioSolicitud').value = "Folio: SOL-2026-200";
+            document.getElementById('tipoMantenimiento').value = "Preventivo";
+            document.getElementById('tipoRed').value = "Fibra Óptica";
+            document.getElementById('diagnosticoMantenimiento').value = "Mantenimiento preventivo de ODF y gabinetes de fibra óptica.";
+            document.getElementById('actividadesRealizadas').value = "Limpieza de conectores y revisión de potencias ópticas.";
+            document.getElementById('estadoOrden').value = "Cerrada";
+            document.getElementById('badgeEstado').innerText = "Completado";
+            document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-100 text-emerald-800";
+            mostrarModal("Preventivo Cargado", "Plantilla preventiva cargada.", "fa-shield-halved", "text-emerald-600 bg-emerald-100");
+        }
+
+        // CONVERTIR A EXCEL (.CSV)
+        function exportarExcel() {
+            const numControl = document.getElementById('numOrden').value;
+            const folio = document.getElementById('folioSolicitud').value;
+            const tipoMant = document.getElementById('tipoMantenimiento').value;
+            const tipoRed = document.getElementById('tipoRed').value;
+            const tecnico = document.getElementById('nombreTecnico').value;
+            const lugar = document.getElementById('lugarTrabajo').value;
+            const diagnostico = document.getElementById('diagnosticoMantenimiento').value;
+            const actividades = document.getElementById('actividadesRealizadas').value;
+
+            let csvContent = "\uFEFF";
+            csvContent += "ORDEN DE TRABAJO - NOVA NET S.A.S.\n";
+            csvContent += "Campo;Detalle\n";
+            csvContent += `"Numero de Control";"${numControl}"\n`;
+            csvContent += `"Folio de Solicitud";"${folio}"\n`;
+            csvContent += `"Tipo Mantenimiento";"${tipoMant}"\n`;
+            csvContent += `"Tipo de Red";"${tipoRed}"\n`;
+            csvContent += `"Tecnico Asignado";"${tecnico}"\n`;
+            csvContent += `"Lugar de Trabajo";"${lugar}"\n`;
+            csvContent += `"Diagnostico";"${diagnostico}"\n`;
+            csvContent += `"Actividades Realizadas";"${actividades}"\n`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${numControl}_Orden_Trabajo.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            mostrarModal("Excel Generado", "El archivo de Excel se ha descargado correctamente.", "fa-file-excel", "text-teal-600 bg-teal-100");
+        }
+
         function exportarPDF() {
-            // Verificación básica antes de imprimir
-            const tecnico = document.getElementById('selectTecnico').value;
-            const problema = document.getElementById('descripcionProblema').value.trim();
-
-            if (!tecnico || !problema) {
-                mostrarModal("Campos Incompletos", "Por favor complete al menos el Técnico Asignado y la Descripción antes de exportar el documento.", "fa-triangle-exclamation", "text-amber-600 bg-amber-100");
-                return;
-            }
-
-            // Ejecuta el diálogo de impresión nativo del navegador (Permite Guardar como PDF)
             window.print();
         }
 
-        // Lógica de Canvas para Firmas Digitales
         function initSignatureCanvas(canvasId) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
-
-            // Ajustar calidad gráfica
             ctx.strokeStyle = '#0f172a';
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
 
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                return {
-                    x: clientX - rect.left,
-                    y: clientY - rect.top
-                };
+                return { x: clientX - rect.left, y: clientY - rect.top };
             }
 
-            function startDrawing(e) {
-                isDrawing = true;
-                const pos = getPos(e);
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            }
-
-            function draw(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-                const pos = getPos(e);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-            }
-
-            function stopDrawing() {
-                isDrawing = false;
-            }
-
-            // Eventos de Mouse
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseleave', stopDrawing);
-
-            // Eventos de Touch (Smartphones y Tablets)
-            canvas.addEventListener('touchstart', startDrawing);
-            canvas.addEventListener('touchmove', draw);
-            canvas.addEventListener('touchend', stopDrawing);
+            canvas.addEventListener('mousedown', (e) => { isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+            canvas.addEventListener('mousemove', (e) => { if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseleave', () => isDrawing = false);
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+            canvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); });
+            canvas.addEventListener('touchend', () => isDrawing = false);
         }
 
         function limpiarCanvas(canvasId) {
@@ -644,24 +528,29 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Modal Notificaciones
+        function limpiarFormulario() {
+            document.getElementById('formOrdenTrabajo').reset();
+            document.getElementById('numOrden').value = "OT-FO-C-2026-" + Math.floor(100 + Math.random() * 900);
+            actualizarDatosTecnico();
+            limpiarCanvas('canvasTecnico');
+            limpiarCanvas('canvasJefe');
+            limpiarCanvas('canvasCliente');
+            mostrarModal("Formulario Limpio", "Se ha reiniciado el formato.", "fa-rotate-right", "text-slate-600 bg-slate-100");
+        }
+
         function mostrarModal(titulo, mensaje, iconoClass, colorClass) {
             document.getElementById('modalTitulo').innerText = titulo;
             document.getElementById('modalMensaje').innerText = mensaje;
-            
             const iconoContenedor = document.getElementById('modalIcono');
             iconoContenedor.className = `w-12 h-12 rounded-full mx-auto flex items-center justify-center text-xl ${colorClass}`;
             iconoContenedor.innerHTML = `<i class="fa-solid ${iconoClass}"></i>`;
-
-            const modal = document.getElementById('modalNotificacion');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('modalNotificacion').classList.remove('hidden');
+            document.getElementById('modalNotificacion').classList.add('flex');
         }
 
         function cerrarModal() {
-            const modal = document.getElementById('modalNotificacion');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('modalNotificacion').classList.add('hidden');
+            document.getElementById('modalNotificacion').classList.remove('flex');
         }
     </script>
 
