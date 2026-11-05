@@ -164,7 +164,6 @@
                         </select>
                     </div>
 
-                    <!-- NUEVO DESPLEGABLE: Tipo de Área / Infraestructura -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Área / Infraestructura *</label>
                         <select id="tipoArea" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
@@ -175,7 +174,6 @@
                         </select>
                     </div>
 
-                    <!-- NUEVO DESPLEGABLE: Medio de Transmisión -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Medio de Transmisión *</label>
                         <select id="medioTransmision" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
@@ -253,7 +251,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Diagnóstico del Mantenimiento *</label>
-                    <textarea id="diagnosticoMantenimiento" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>Alarma crítica de pérdida parcial de enlace óptico en el sistema de historias clínicas del hospital. La medición con medidor de potencia refleja una atenuación de -28.5 dBm, causada por macrocurvatura severa y acumulación de polvo en el ODF principal del sótano.</textarea>
+                    <textarea id="diagnosticoMantenimiento" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>Se reportó que el sistema de historias clínicas del hospital se quedó sin conexión a internet. Al revisar con los equipos de medición, se descubrió que el cable de fibra óptica estaba demasiado doblado y tenía polvo acumulado en el aparato principal del sótano, lo que impedía que la señal de luz pasara correctamente.</textarea>
                 </div>
             </div>
 
@@ -265,7 +263,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Actividades Realizadas *</label>
-                    <textarea id="actividadesRealizadas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm (dentro del rango operativo estándar).</textarea>
+                    <textarea id="actividadesRealizadas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>1. Se coordinó con el personal del hospital para hacer el arreglo en horario nocturno y no afectar a los usuarios. 2. Se revisaron físicamente las conexiones y los equipos de red. 3. Se limpiaron los conectores y adaptadores con alcohol especial y paños limpios para retirar el polvo. 4. Se acomodó el cable de fibra óptica para quitarle el doblez excesivo. 5. Se midió de nuevo la señal y se comprobó que el servicio quedó funcionando perfectamente.</textarea>
                 </div>
 
                 <!-- Tabla de Materiales del Estudio de Caso -->
@@ -422,7 +420,7 @@
             }
         }
 
-        // MACRO: ESTUDIO DE CASO (Hospital Regional San José)
+        // MACRO: ESTUDIO DE CASO (Hospital Regional San José) - Textos sencillos y claros
         function cargarNuevoEstudioCaso() {
             document.getElementById('numOrden').value = "OT-FO-C-2026-089";
             document.getElementById('folioSolicitud').value = "Folio: SOL-2026-089";
@@ -440,8 +438,8 @@
 
             document.getElementById('lugarTrabajo').value = "Hospital Regional San José, Cuarto de Equipos Principal (Sótano) y Central de Admisiones (Piso 1)";
             document.getElementById('proveedorExterno').value = "No aplica (Personal Interno NOVA NET)";
-            document.getElementById('diagnosticoMantenimiento').value = "Alarma crítica de pérdida parcial de enlace óptico en el sistema de historias clínicas del hospital. La medición con medidor de potencia refleja una atenuación de -28.5 dBm, causada por macrocurvatura severa y acumulación de polvo en el ODF principal del sótano.";
-            document.getElementById('actividadesRealizadas').value = "1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm.";
+            document.getElementById('diagnosticoMantenimiento').value = "Se reportó que el sistema de historias clínicas del hospital se quedó sin conexión a internet. Al revisar con los equipos de medición, se descubrió que el cable de fibra óptica estaba demasiado doblado y tenía polvo acumulado en el aparato principal del sótano, lo que impedía que la señal de luz pasara correctamente.";
+            document.getElementById('actividadesRealizadas').value = "1. Se coordinó con el personal del hospital para hacer el arreglo en horario nocturno y no afectar a los usuarios. 2. Se revisaron físicamente las conexiones y los equipos de red. 3. Se limpiaron los conectores y adaptadores con alcohol especial y paños limpios para retirar el polvo. 4. Se acomodó el cable de fibra óptica para quitarle el doblez excesivo. 5. Se midió de nuevo la señal y se comprobó que el servicio quedó funcionando perfectamente.";
 
             mostrarModal("Estudio de Caso Cargado", "Se han cargado los datos del caso: Hospital Regional San José (Folio SOL-2026-089).", "fa-hospital", "text-indigo-600 bg-indigo-100");
         }
