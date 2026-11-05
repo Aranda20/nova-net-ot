@@ -255,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN III: ACTIVIDADES Y MATERIALES -->
+            <!-- SECCIÓN III: ACTIVIDADES Y MATERIALES (CON BASE DE DATOS DE INVENTARIO) -->
             <div class="space-y-3">
                 <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
                     <span><i class="fa-solid fa-boxes-packing mr-1.5"></i> Sección III: Actividades Realizadas y Recursos</span>
@@ -266,49 +266,45 @@
                     <textarea id="actividadesRealizadas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>1. Se coordinó con el personal del hospital para hacer el arreglo en horario nocturno y no afectar a los usuarios. 2. Se revisaron físicamente las conexiones y los equipos de red. 3. Se limpiaron los conectores y adaptadores con alcohol especial y paños limpios para retirar el polvo. 4. Se acomodó el cable de fibra óptica para quitarle el doblez excesivo. 5. Se midió de nuevo la señal y se comprobó que el servicio quedó funcionando perfectamente.</textarea>
                 </div>
 
-                <!-- Tabla de Materiales del Estudio de Caso -->
+                <!-- SELECTOR DESDE LA BASE DE DATOS DE INVENTARIO -->
+                <div class="no-print bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wide"><i class="fa-solid fa-database mr-1 text-brand-600"></i> Seleccionar Elemento del Inventario Oficial (Base de Datos)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                        <div class="sm:col-span-7">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Buscar Material o Herramienta</label>
+                            <select id="selectInventarioBD" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                <!-- Se llena dinámicamente con JavaScript -->
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Cantidad</label>
+                            <input type="number" id="cantidadBD" value="1" min="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <button type="button" onclick="agregarElementoDesdeBD()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DINÁMICA DE RECURSOS -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales y Herramientas Utilizados (Estudio de Caso Hospital):</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales y Herramientas Utilizados en la Intervención:</label>
                     <div class="overflow-x-auto border border-slate-200 rounded-lg">
-                        <table class="w-full text-left text-xs">
+                        <table id="tablaRecursos" class="w-full text-left text-xs">
                             <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
                                 <tr>
                                     <th class="p-2.5">Tipo</th>
-                                    <th class="p-2.5">Descripción</th>
+                                    <th class="p-2.5">Descripción / Elemento</th>
                                     <th class="p-2.5 text-center">Cantidad</th>
                                     <th class="p-2.5 text-center">Unidad</th>
-                                    <th class="p-2.5">Origen</th>
+                                    <th class="p-2.5">Origen / Ubicación</th>
+                                    <th class="p-2.5 text-center no-print">Acción</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-200">
-                                <tr>
-                                    <td class="p-2.5 font-medium">Material</td>
-                                    <td class="p-2.5">Alcohol Isopropílico 99% (Frasco)</td>
-                                    <td class="p-2.5 text-center font-bold">1</td>
-                                    <td class="p-2.5 text-center">und</td>
-                                    <td class="p-2.5 text-slate-500">Catálogo</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2.5 font-medium">Material</td>
-                                    <td class="p-2.5">Paños libres de pelusa (Lint-free wipes)</td>
-                                    <td class="p-2.5 text-center font-bold">1</td>
-                                    <td class="p-2.5 text-center">paquete</td>
-                                    <td class="p-2.5 text-slate-500">Catálogo</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2.5 font-medium">Material</td>
-                                    <td class="p-2.5">Conector Mecánico Óptico SC/APC de repuesto</td>
-                                    <td class="p-2.5 text-center font-bold">2</td>
-                                    <td class="p-2.5 text-center">und</td>
-                                    <td class="p-2.5 text-slate-500">Catálogo</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2.5 font-medium">Herramienta</td>
-                                    <td class="p-2.5">Medidor de Potencia Óptica (Power Meter / VFL)</td>
-                                    <td class="p-2.5 text-center font-bold">1</td>
-                                    <td class="p-2.5 text-center">und</td>
-                                    <td class="p-2.5 text-slate-500">Catálogo</td>
-                                </tr>
+                            <tbody id="cuerpoTablaRecursos" class="divide-y divide-slate-200">
+                                <!-- Filas dinámicas -->
                             </tbody>
                         </table>
                     </div>
@@ -376,7 +372,7 @@
             </div>
 
             <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400">
-                <p>NOVA NET S.A.S. — Sistema Integrado de Gestión de Órdenes de Mantenimiento Óptico.</p>
+                <p>NOVA NET S.A.S. — Sistema Integrado de Gestión de Órdenes de Mantenimiento con Base de Datos de Inventario Oficial.</p>
             </div>
         </form>
     </div>
@@ -397,6 +393,40 @@
 
     <!-- LOGICA Y SCRIPTS JAVASCRIPT -->
     <script>
+        // BASE DE DATOS DE INVENTARIO OFICIAL (Extraída de los archivos Excel)
+        const baseDatosInventario = [
+            { tipo: "Material", nombre: "Alcohol Isopropílico 99% (Frasco)", unidad: "und", origen: "Catálogo Inventario" },
+            { tipo: "Material", nombre: "Paños libres de pelusa (Lint-free wipes)", unidad: "paquete", origen: "Catálogo Inventario" },
+            { tipo: "Material", nombre: "Conector Mecánico Óptico SC/APC", unidad: "und", origen: "Catálogo Inventario" },
+            { tipo: "Material", nombre: "Divisor Troncal 2 Vías", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Divisor Troncal 3 Vías", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Divisor Troncal 4 Vías", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Acoplador Direccional (DC)", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Multitap de 2 Salidas", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Multitap de 4 Salidas", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Multitap de 8 Salidas", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Ecualizador de Línea (LEQ)", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Material", nombre: "Insertor de Potencia en Línea (LPI)", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Dispositivo Activo", nombre: "Nodo Óptico HFC", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Dispositivo Activo", nombre: "Amplificador Troncal / Mini Troncal", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Dispositivo Activo", nombre: "Extensor de Línea (Line Extender - LE)", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Dispositivo Activo", nombre: "Fuente de Alimentación AC Ferroresonante", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Cable Coaxial", nombre: "Cable Rígido Troncal .750\" Autosoportado", unidad: "Metros", origen: "Inventario HFC" },
+            { tipo: "Cable Coaxial", nombre: "Cable Rígido Distribución .500\" Autosoportado", unidad: "Metros", origen: "Inventario HFC" },
+            { tipo: "Conector", nombre: "Conector Tipo Pin .500\"", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Conector", nombre: "Conector Tipo Pin .750\"", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Conector", nombre: "Manga Termocontráctil", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Medidor de Potencia Óptica (Power Meter / VFL)", unidad: "und", origen: "Catálogo Herramientas" },
+            { tipo: "Herramienta", nombre: "Curvador de Cable", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Máquina Cosedora / Devanadora", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Tensora de Cadena (Chicharra)", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Herramienta Pelachaqueta", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Alicate Cortacable Circular", unidad: "Und", origen: "Inventario HFC" },
+            { tipo: "Herramienta", nombre: "Soplete a Gas con Boquilla No Reductora", unidad: "Und", origen: "Inventario HFC" }
+        ];
+
+        let recursosSeleccionados = [];
+
         const personalTelecom = {
             "1": { nombre: "Dairon Andrey Aranda", cargo: "Tecnólogo Telecomunicaciones", celular: "3000000001" },
             "2": { nombre: "Juan Miguel Fernandez Palta", cargo: "Ingeniero Redes", celular: "3000000002" }
@@ -404,10 +434,84 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             actualizarDatosTecnico();
+            poblarSelectInventario();
             initSignatureCanvas('canvasTecnico');
             initSignatureCanvas('canvasJefe');
             initSignatureCanvas('canvasCliente');
+
+            // Cargar elementos por defecto del Estudio de Caso Hospital
+            recursosSeleccionados = [
+                { tipo: "Material", nombre: "Alcohol Isopropílico 99% (Frasco)", cantidad: 1, unidad: "und", origen: "Catálogo Inventario" },
+                { tipo: "Material", nombre: "Paños libres de pelusa (Lint-free wipes)", cantidad: 1, unidad: "paquete", origen: "Catálogo Inventario" },
+                { tipo: "Material", nombre: "Conector Mecánico Óptico SC/APC", cantidad: 2, unidad: "und", origen: "Catálogo Inventario" },
+                { tipo: "Herramienta", nombre: "Medidor de Potencia Óptica (Power Meter / VFL)", cantidad: 1, unidad: "und", origen: "Catálogo Herramientas" }
+            ];
+            actualizarTablaRecursos();
         });
+
+        function poblarSelectInventario() {
+            const select = document.getElementById('selectInventarioBD');
+            select.innerHTML = "";
+            baseDatosInventario.forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `[${item.tipo}] ${item.nombre} (${item.unidad})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function agregarElementoDesdeBD() {
+            const selectIndex = document.getElementById('selectInventarioBD').value;
+            const cantidad = parseInt(document.getElementById('cantidadBD').value) || 1;
+            const itemBD = baseDatosInventario[selectIndex];
+
+            // Verificar si ya existe para sumar la cantidad
+            const existente = recursosSeleccionados.find(r => r.nombre === itemBD.nombre);
+            if (existente) {
+                existente.cantidad += cantidad;
+            } else {
+                recursosSeleccionados.push({
+                    tipo: itemBD.tipo,
+                    nombre: itemBD.nombre,
+                    cantidad: cantidad,
+                    unidad: itemBD.unidad,
+                    origen: itemBD.origen
+                });
+            }
+            actualizarTablaRecursos();
+            mostrarModal("Elemento Añadido", `Se agregó "${itemBD.nombre}" a la lista de recursos de la orden.`, "fa-circle-check", "text-brand-600 bg-brand-100");
+        }
+
+        function eliminarElementoRecurso(index) {
+            recursosSeleccionados.splice(index, 1);
+            actualizarTablaRecursos();
+        }
+
+        function actualizarTablaRecursos() {
+            const tbody = document.getElementById('cuerpoTablaRecursos');
+            tbody.innerHTML = "";
+            if (recursosSeleccionados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No hay elementos agregados. Utilice el buscador superior para añadir materiales o herramientas.</td></tr>`;
+                return;
+            }
+
+            recursosSeleccionados.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium">${item.tipo}</td>
+                    <td class="p-2.5">${item.nombre}</td>
+                    <td class="p-2.5 text-center font-bold">${item.cantidad}</td>
+                    <td class="p-2.5 text-center">${item.unidad}</td>
+                    <td class="p-2.5 text-slate-500">${item.origen}</td>
+                    <td class="p-2.5 text-center no-print">
+                        <button type="button" onclick="eliminarElementoRecurso(${index})" class="text-rose-600 hover:text-rose-800 p-1 rounded transition" title="Eliminar elemento">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
         function actualizarDatosTecnico() {
             const select = document.getElementById('selectTecnico');
@@ -420,7 +524,7 @@
             }
         }
 
-        // MACRO: ESTUDIO DE CASO (Hospital Regional San José) - Textos sencillos y claros
+        // MACRO: ESTUDIO DE CASO (Hospital Regional San José)
         function cargarNuevoEstudioCaso() {
             document.getElementById('numOrden').value = "OT-FO-C-2026-089";
             document.getElementById('folioSolicitud').value = "Folio: SOL-2026-089";
@@ -441,6 +545,14 @@
             document.getElementById('diagnosticoMantenimiento').value = "Se reportó que el sistema de historias clínicas del hospital se quedó sin conexión a internet. Al revisar con los equipos de medición, se descubrió que el cable de fibra óptica estaba demasiado doblado y tenía polvo acumulado en el aparato principal del sótano, lo que impedía que la señal de luz pasara correctamente.";
             document.getElementById('actividadesRealizadas').value = "1. Se coordinó con el personal del hospital para hacer el arreglo en horario nocturno y no afectar a los usuarios. 2. Se revisaron físicamente las conexiones y los equipos de red. 3. Se limpiaron los conectores y adaptadores con alcohol especial y paños limpios para retirar el polvo. 4. Se acomodó el cable de fibra óptica para quitarle el doblez excesivo. 5. Se midió de nuevo la señal y se comprobó que el servicio quedó funcionando perfectamente.";
 
+            recursosSeleccionados = [
+                { tipo: "Material", nombre: "Alcohol Isopropílico 99% (Frasco)", cantidad: 1, unidad: "und", origen: "Catálogo Inventario" },
+                { tipo: "Material", nombre: "Paños libres de pelusa (Lint-free wipes)", cantidad: 1, unidad: "paquete", origen: "Catálogo Inventario" },
+                { tipo: "Material", nombre: "Conector Mecánico Óptico SC/APC", cantidad: 2, unidad: "und", origen: "Catálogo Inventario" },
+                { tipo: "Herramienta", nombre: "Medidor de Potencia Óptica (Power Meter / VFL)", cantidad: 1, unidad: "und", origen: "Catálogo Herramientas" }
+            ];
+            actualizarTablaRecursos();
+
             mostrarModal("Estudio de Caso Cargado", "Se han cargado los datos del caso: Hospital Regional San José (Folio SOL-2026-089).", "fa-hospital", "text-indigo-600 bg-indigo-100");
         }
 
@@ -455,10 +567,17 @@
             document.getElementById('estadoOrden').value = "Cerrada";
             document.getElementById('badgeEstado').innerText = "Completado";
             document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-100 text-emerald-800";
+            
+            recursosSeleccionados = [
+                { tipo: "Material", nombre: "Alcohol Isopropílico 99% (Frasco)", cantidad: 1, unidad: "und", origen: "Catálogo Inventario" },
+                { tipo: "Material", nombre: "Paños libres de pelusa (Lint-free wipes)", cantidad: 2, unidad: "paquete", origen: "Catálogo Inventario" }
+            ];
+            actualizarTablaRecursos();
+
             mostrarModal("Preventivo Cargado", "Plantilla preventiva cargada.", "fa-shield-halved", "text-emerald-600 bg-emerald-100");
         }
 
-        // CONVERTIR A EXCEL (.CSV)
+        // CONVERTIR A EXCEL (.CSV) CON RECURSOS
         function exportarExcel() {
             const numControl = document.getElementById('numOrden').value;
             const folio = document.getElementById('folioSolicitud').value;
@@ -481,7 +600,12 @@
             csvContent += `"Tecnico Asignado";"${tecnico}"\n`;
             csvContent += `"Lugar de Trabajo";"${lugar}"\n`;
             csvContent += `"Diagnostico";"${diagnostico}"\n`;
-            csvContent += `"Actividades Realizadas";"${actividades}"\n`;
+            csvContent += `"Actividades Realizadas";"${actividades}"\n\n`;
+            csvContent += "LISTA DE RECURSOS UTILIZADOS:\n";
+            csvContent += "Tipo;Descripcion;Cantidad;Unidad;Origen\n";
+            recursosSeleccionados.forEach(r => {
+                csvContent += `"${r.tipo}";"${r.nombre}";"${r.cantidad}";"${r.unidad}";"${r.origen}"\n`;
+            });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -492,7 +616,7 @@
             a.click();
             document.body.removeChild(a);
 
-            mostrarModal("Excel Generado", "El archivo de Excel se ha descargado correctamente.", "fa-file-excel", "text-teal-600 bg-teal-100");
+            mostrarModal("Excel Generado", "El archivo de Excel se ha descargado correctamente con los recursos de la base de datos.", "fa-file-excel", "text-teal-600 bg-teal-100");
         }
 
         function exportarPDF() {
@@ -533,6 +657,8 @@
             document.getElementById('formOrdenTrabajo').reset();
             document.getElementById('numOrden').value = "OT-FO-C-2026-" + Math.floor(100 + Math.random() * 900);
             actualizarDatosTecnico();
+            recursosSeleccionados = [];
+            actualizarTablaRecursos();
             limpiarCanvas('canvasTecnico');
             limpiarCanvas('canvasJefe');
             limpiarCanvas('canvasCliente');
