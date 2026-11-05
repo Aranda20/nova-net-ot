@@ -155,7 +155,7 @@
                     <span><i class="fa-solid fa-circle-info mr-1.5"></i> Sección I: Información General de la Orden</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Mantenimiento *</label>
                         <select id="tipoMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
@@ -164,41 +164,42 @@
                         </select>
                     </div>
 
+                    <!-- NUEVO DESPLEGABLE: Tipo de Área / Infraestructura -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Red / Área *</label>
-                        <select id="tipoRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="Fibra Óptica" selected>Fibra Óptica</option>
-                            <option value="UTP">UTP</option>
-                            <option value="Coaxial">Coaxial</option>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Área / Infraestructura *</label>
+                        <select id="tipoArea" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Interna / Edificio" selected>Interna / Edificio</option>
+                            <option value="Aérea">Aérea (Poste / Externa)</option>
+                            <option value="Subterránea">Subterránea (Canalización)</option>
+                            <option value="Adosada">Adosada / Fachada</option>
                         </select>
                     </div>
 
+                    <!-- NUEVO DESPLEGABLE: Medio de Transmisión -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ubicación de la Red *</label>
-                        <select id="ubicacionRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="Interna" selected>Interna</option>
-                            <option value="Externa">Externa</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Clasificación Mantenimiento *</label>
-                        <select id="clasificacionMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
-                            <option value="Mayor" selected>Mayor (Intervención de Enlace Óptico)</option>
-                            <option value="Menor">Menor</option>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Medio de Transmisión *</label>
+                        <select id="medioTransmision" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Fibra Óptica Monomodo" selected>Fibra Óptica Monomodo</option>
+                            <option value="Fibra Óptica Multimodo">Fibra Óptica Multimodo</option>
+                            <option value="Cable UTP / Par Trenzado">Cable UTP / Par Trenzado</option>
+                            <option value="Cable Coaxial">Cable Coaxial</option>
+                            <option value="Enlace Inalámbrico / Radio">Enlace Inalámbrico / Radio</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Emisión</label>
-                        <input type="text" id="fechaEmision" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-mono" readonly value="28/10/2026">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Clasificación Mantenimiento *</label>
+                        <select id="clasificacionMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Mayor" selected>Mayor (Intervención de Enlace)</option>
+                            <option value="Menor">Menor</option>
+                        </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha Programada Atención *</label>
-                        <input type="text" id="fechaProgramada" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" value="28/10/2026 (Ventana Nocturna 01:00 a.m.)" required>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Emisión</label>
+                        <input type="text" id="fechaEmision" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-mono" readonly value="28/10/2026">
                     </div>
 
                     <div>
@@ -267,7 +268,7 @@
                     <textarea id="actividadesRealizadas" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm (dentro del rango operativo estándar).</textarea>
                 </div>
 
-                <!-- Tabla de Materiales del Nuevo Estudio de Caso -->
+                <!-- Tabla de Materiales del Estudio de Caso -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales y Herramientas Utilizados (Estudio de Caso Hospital):</label>
                     <div class="overflow-x-auto border border-slate-200 rounded-lg">
@@ -421,16 +422,15 @@
             }
         }
 
-        // MACRO: NUEVO ESTUDIO DE CASO (Hospital Regional San José)
+        // MACRO: ESTUDIO DE CASO (Hospital Regional San José)
         function cargarNuevoEstudioCaso() {
             document.getElementById('numOrden').value = "OT-FO-C-2026-089";
             document.getElementById('folioSolicitud').value = "Folio: SOL-2026-089";
             document.getElementById('tipoMantenimiento').value = "Correctivo";
-            document.getElementById('tipoRed').value = "Fibra Óptica";
-            document.getElementById('ubicacionRed').value = "Interna";
+            document.getElementById('tipoArea').value = "Interna / Edificio";
+            document.getElementById('medioTransmision').value = "Fibra Óptica Monomodo";
             document.getElementById('clasificacionMantenimiento').value = "Mayor";
             document.getElementById('fechaEmision').value = "28/10/2026";
-            document.getElementById('fechaProgramada').value = "28/10/2026 (Ventana Nocturna 01:00 a.m.)";
             document.getElementById('estadoOrden').value = "Cerrada";
             document.getElementById('badgeEstado').innerText = "Cerrada";
             document.getElementById('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-100 text-emerald-800";
@@ -443,14 +443,15 @@
             document.getElementById('diagnosticoMantenimiento').value = "Alarma crítica de pérdida parcial de enlace óptico en el sistema de historias clínicas del hospital. La medición con medidor de potencia refleja una atenuación de -28.5 dBm, causada por macrocurvatura severa y acumulación de polvo en el ODF principal del sótano.";
             document.getElementById('actividadesRealizadas').value = "1. Coordinación de ventana de mantenimiento nocturno con sistemas del hospital. 2. Inspección visual y física del ODF y bandejas de empalme. 3. Limpieza profunda de férulas y adaptadores SC/APC con alcohol isopropílico 99%. 4. Corrección del radio de curvatura del latiguillo de fibra monomodo. 5. Verificación final de potencia óptica con resultado exitoso de -18.2 dBm.";
 
-            mostrarModal("Nuevo Estudio de Caso Cargado", "Se han cargado los datos del caso: Hospital Regional San José (Folio SOL-2026-089).", "fa-hospital", "text-indigo-600 bg-indigo-100");
+            mostrarModal("Estudio de Caso Cargado", "Se han cargado los datos del caso: Hospital Regional San José (Folio SOL-2026-089).", "fa-hospital", "text-indigo-600 bg-indigo-100");
         }
 
         function cargarPlantillaPreventiva() {
             document.getElementById('numOrden').value = "OT-FO-P-2026-001";
             document.getElementById('folioSolicitud').value = "Folio: SOL-2026-200";
             document.getElementById('tipoMantenimiento').value = "Preventivo";
-            document.getElementById('tipoRed').value = "Fibra Óptica";
+            document.getElementById('tipoArea').value = "Aérea";
+            document.getElementById('medioTransmision').value = "Fibra Óptica Monomodo";
             document.getElementById('diagnosticoMantenimiento').value = "Mantenimiento preventivo de ODF y gabinetes de fibra óptica.";
             document.getElementById('actividadesRealizadas').value = "Limpieza de conectores y revisión de potencias ópticas.";
             document.getElementById('estadoOrden').value = "Cerrada";
@@ -464,7 +465,8 @@
             const numControl = document.getElementById('numOrden').value;
             const folio = document.getElementById('folioSolicitud').value;
             const tipoMant = document.getElementById('tipoMantenimiento').value;
-            const tipoRed = document.getElementById('tipoRed').value;
+            const tipoArea = document.getElementById('tipoArea').value;
+            const medio = document.getElementById('medioTransmision').value;
             const tecnico = document.getElementById('nombreTecnico').value;
             const lugar = document.getElementById('lugarTrabajo').value;
             const diagnostico = document.getElementById('diagnosticoMantenimiento').value;
@@ -476,7 +478,8 @@
             csvContent += `"Numero de Control";"${numControl}"\n`;
             csvContent += `"Folio de Solicitud";"${folio}"\n`;
             csvContent += `"Tipo Mantenimiento";"${tipoMant}"\n`;
-            csvContent += `"Tipo de Red";"${tipoRed}"\n`;
+            csvContent += `"Tipo de Area";"${tipoArea}"\n`;
+            csvContent += `"Medio de Transmision";"${medio}"\n`;
             csvContent += `"Tecnico Asignado";"${tecnico}"\n`;
             csvContent += `"Lugar de Trabajo";"${lugar}"\n`;
             csvContent += `"Diagnostico";"${diagnostico}"\n`;
