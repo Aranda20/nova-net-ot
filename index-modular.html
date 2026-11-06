@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA NET - Orden de Trabajo Virtual (NOVANET-FO-OT-001)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#16a34a',
+                            600: '#15803d',   // (agregado: faltaba y el botón "Agregar" se veía sin fondo)
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Estilos adicionales (nuevo archivo) -->
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 11pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-border {
+                border: 1px solid #94a3b8 !important;
+            }
+            .print-shadow-none {
+                box-shadow: none !important;
+            }
+            textarea {
+                border: 1px solid #cbd5e1 !important;
+                resize: none;
+            }
+            input, select {
+                border: 1px solid #cbd5e1 !important;
+                background: transparent !important;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            .signature-pad {
+                border: 1px dashed #64748b !important;
+            }
+        }
+        .signature-canvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen py-6 px-3 sm:px-6">
+
+    <!-- Contenedor Principal -->
+    <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden print-border print-shadow-none border border-slate-200">
+
+        <!-- Barra de Herramientas / Macros Web (No imprimible) -->
+        <div class="no-print bg-slate-900 text-white p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-satellite-dish text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">NOVA NET</h1>
+                    <p class="text-xs text-slate-400">Panel de Macros y Control de Órdenes</p>
+                </div>
+            </div>
+
+            <!-- Botonera de Plantillas y Acciones -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Estudio de caso (ahora: Correctivo - Red Coaxial Externa, tomado del Excel) -->
+                <button type="button" onclick="cargarNuevoEstudioCaso()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    <span>Cargar Correctivo (Estudio de Caso)</span>
+                </button>
+
+                <button type="button" onclick="cargarPlantillaPreventiva()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Cargar Preventivo</span>
+                </button>
+
+                <!-- NUEVO: plantilla totalmente limpia -->
+                <button type="button" onclick="plantillaEnBlanco()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-regular fa-file"></i>
+                    <span>Plantilla en Blanco</span>
+                </button>
+
+                <button type="button" onclick="limpiarFormulario()" class="bg-slate-600 hover:bg-slate-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Limpiar</span>
+                </button>
+
+                <button type="button" onclick="exportarExcel()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-medium px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Convertir a Excel</span>
+                </button>
+
+                <button type="button" onclick="exportarPDF()" class="bg-brand-500 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Imprimir / PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Formulario Oficial -->
+        <form id="formOrdenTrabajo" class="p-6 sm:p-8 space-y-6">
+
+            <!-- ENCABEZADO INSTITUCIONAL -->
+            <div class="border-b-2 border-brand-800 pb-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                    <div class="flex items-center space-x-3 md:col-span-1">
+                        <div class="bg-brand-900 text-white p-3 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-wifi text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-brand-900 text-xl tracking-tight">NOVA NET</h2>
+                            <p class="text-xs font-semibold text-brand-700 tracking-wider uppercase">NOVA NET S.A.S.</p>
+                            <span class="text-[10px] text-slate-500 block">NIT: 901.345.678-1</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center md:col-span-2">
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-800 uppercase tracking-wide">
+                            ORDEN DE TRABAJO DE MANTENIMIENTO DE TELECOMUNICACIONES
+                        </h1>
+                        <p class="text-xs text-slate-500 font-mono mt-1">
+                            Código: <span class="font-semibold text-slate-700">NOVANET-FO-OT-001</span> | Versión: 03 | Vigencia: 2026
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-right md:col-span-1">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase">N° Control / Folio</label>
+                        <!-- Ahora editables (antes eran de solo lectura) para poder diligenciar la plantilla en blanco -->
+                        <input type="text" id="numOrden" placeholder="N° de control" class="text-sm font-bold text-brand-900 bg-transparent text-right w-full focus:outline-none border-b border-dashed border-slate-300">
+                        <input type="text" id="folioSolicitud" placeholder="Folio de solicitud" class="text-[11px] text-slate-600 bg-transparent text-right w-full focus:outline-none font-mono border-b border-dashed border-slate-300">
+                        <span id="badgeEstado" class="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-100 text-blue-800">Abierta</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN I: INFORMACIÓN GENERAL -->
+            <div class="space-y-3 bloque-imprimible">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-circle-info mr-1.5"></i> Sección I: Información General de la Orden</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Mantenimiento *</label>
+                        <select id="tipoMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Correctivo">Correctivo</option>
+                            <option value="Preventivo">Preventivo</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Área / Infraestructura *</label>
+                        <select id="tipoArea" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Interna / Edificio">Interna / Edificio</option>
+                            <option value="Aérea">Aérea (Poste / Externa)</option>
+                            <option value="Subterránea">Subterránea (Canalización)</option>
+                            <option value="Adosada">Adosada / Fachada</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Medio de Transmisión *</label>
+                        <select id="medioTransmision" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Fibra Óptica Monomodo">Fibra Óptica Monomodo</option>
+                            <option value="Fibra Óptica Multimodo">Fibra Óptica Multimodo</option>
+                            <option value="Cable UTP / Par Trenzado">Cable UTP / Par Trenzado</option>
+                            <option value="Cable Coaxial">Cable Coaxial</option>
+                            <option value="Enlace Inalámbrico / Radio">Enlace Inalámbrico / Radio</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Clasificación Mantenimiento (Alcance) *</label>
+                        <select id="clasificacionMantenimiento" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Mayor">Mayor (Intervención de Enlace)</option>
+                            <option value="Menor">Menor</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Emisión</label>
+                        <input type="date" id="fechaEmision" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Estado de la Orden *</label>
+                        <select id="estadoOrden" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <option value="Abierta" selected>Abierta</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Cerrada">Cerrada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NUEVO: fecha de programación -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fecha de Programación</label>
+                        <input type="date" id="fechaProgramacion" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mantenimiento (según el técnico)</label>
+                        <select id="internoExterno" onchange="cambiarInternoExterno()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <option value="">Seleccione...</option>
+                            <option value="Interno">Interno</option>
+                            <option value="Externo">Externo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Empresa / Proveedor del Técnico</label>
+                        <input type="text" id="empresaTecnico" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Seleccionar Técnico Asignado *</label>
+                        <select id="selectTecnico" onchange="actualizarDatosTecnico()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                            <!-- Se llena dinámicamente con JavaScript (personal) -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Técnico Responsable</label>
+                        <input type="text" id="nombreTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Celular / Contacto</label>
+                        <input type="text" id="celularTecnico" class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-medium" readonly>
+                    </div>
+                </div>
+
+                <!-- NUEVO: resto de los datos del personal asignado -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Cargo</label>
+                        <input type="text" id="cargoTecnico" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Cédula</label>
+                        <input type="text" id="cedulaTecnico" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Especialidad</label>
+                        <input type="text" id="especialidadTecnico" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN I-A: DATOS DEL CLIENTE -->
+            <div class="space-y-3 bloque-imprimible">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-building-user mr-1.5"></i> Sección I-A: Datos del Cliente</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Cliente *</label>
+                        <select id="selectCliente" onchange="actualizarDatosCliente()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <!-- Se llena dinámicamente con JavaScript (base de datos de clientes) -->
+                        </select>
+                        <input type="text" id="clienteManual" placeholder="Escriba el nombre del cliente" class="hidden mt-2 w-full campo-manual border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">NIT / Cédula</label>
+                        <input type="text" id="cliNit" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">N.º de Contrato</label>
+                        <input type="text" id="cliContrato" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Servicio</label>
+                        <input type="text" id="cliServicio" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección</label>
+                        <input type="text" id="cliDireccion" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Barrio / Sector</label>
+                        <input type="text" id="cliBarrio" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Municipio</label>
+                        <input type="text" id="cliMunicipio" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Persona de Contacto</label>
+                        <input type="text" id="cliContacto" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono de Contacto</label>
+                        <input type="text" id="cliTelefono" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Correo Electrónico</label>
+                        <input type="text" id="cliCorreo" class="w-full campo-auto border border-slate-300 rounded-lg px-3 py-2 text-sm" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN I-B: DATOS DE LA RED -->
+            <div class="space-y-3 bloque-imprimible">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-network-wired mr-1.5"></i> Sección I-B: Datos de la Red</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Red *</label>
+                        <select id="tipoRed" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <!-- Se llena dinámicamente con JavaScript (lista Tipo de red del Excel) -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Medio / Especificación</label>
+                        <input type="text" id="medioEspecificacion" placeholder="Ej.: Cable coaxial .500 (cobre), tramo aéreo de unos 420 m" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Elemento o Equipo Intervenido</label>
+                    <input type="text" id="elementoIntervenido" placeholder="Ej.: Conector de salida del amplificador A-08" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- SECCIÓN II: UBICACIÓN Y DIAGNÓSTICO -->
+            <div class="space-y-3">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-location-dot mr-1.5"></i> Sección II: Ubicación y Diagnóstico del Evento</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lugar del Trabajo (Sitio) / Ubicación / Ruta / Nodo *</label>
+                        <input type="text" id="lugarTrabajo" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Proveedor Externo (Si aplica)</label>
+                        <input type="text" id="proveedorExterno" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- NUEVO: motivo de la solicitud -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo de la Solicitud / Falla Reportada *</label>
+                    <textarea id="motivoSolicitud" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Diagnóstico del Mantenimiento *</label>
+                    <textarea id="diagnosticoMantenimiento" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required></textarea>
+                </div>
+            </div>
+
+            <!-- SECCIÓN III: ACTIVIDADES Y MATERIALES (CON BASE DE DATOS DE INVENTARIO) -->
+            <div class="space-y-3">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-boxes-packing mr-1.5"></i> Sección III: Actividades Realizadas y Recursos</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Actividades Realizadas *</label>
+                    <textarea id="actividadesRealizadas" rows="4" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" required></textarea>
+                </div>
+
+                <!-- NUEVO: MEDICIONES ANTES Y DESPUÉS -->
+                <div class="space-y-2 bloque-imprimible">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h4 class="sub-titulo">Mediciones antes y después de la intervención</h4>
+                        <div class="no-print flex gap-2">
+                            <button type="button" onclick="cargarMedicionesTipicas()" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300 transition">
+                                <i class="fa-solid fa-list-check mr-1"></i> Parámetros típicos (Red Coaxial)
+                            </button>
+                            <button type="button" onclick="agregarMedicion()" class="text-[11px] bg-brand-600 hover:bg-brand-700 text-white font-semibold px-2.5 py-1.5 rounded-lg transition">
+                                <i class="fa-solid fa-plus mr-1"></i> Agregar medición
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table id="tablaMediciones" class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Parámetro</th>
+                                    <th class="p-2.5 w-24">Unidad</th>
+                                    <th class="p-2.5 w-24 text-center">Antes</th>
+                                    <th class="p-2.5 w-24 text-center">Después</th>
+                                    <th class="p-2.5">Observación</th>
+                                    <th class="p-2.5 text-center no-print w-16">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaMediciones" class="divide-y divide-slate-200">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SELECTOR DESDE LA BASE DE DATOS DE INVENTARIO -->
+                <div class="no-print bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wide"><i class="fa-solid fa-database mr-1 text-brand-600"></i> Seleccionar Elemento del Inventario Oficial (Base de Datos)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                        <div class="sm:col-span-7">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Buscar Material o Herramienta</label>
+                            <select id="selectInventarioBD" onchange="alternarMaterialManual()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                <!-- Se llena dinámicamente con JavaScript -->
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Cantidad</label>
+                            <input type="number" id="cantidadBD" value="1" min="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <button type="button" onclick="agregarElementoDesdeBD()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                    <!-- NUEVO: material fuera del inventario (se escribe a mano) -->
+                    <div id="materialManual" class="hidden grid grid-cols-1 sm:grid-cols-12 gap-3">
+                        <div class="sm:col-span-7">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Descripción del material</label>
+                            <input type="text" id="manualNombre" class="w-full campo-manual border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Tipo</label>
+                            <select id="manualTipo" class="w-full campo-manual border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                                <option>Material</option><option>Herramienta</option><option>Conector</option><option>Cable Coaxial</option><option>Dispositivo Activo</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-medium text-slate-600 mb-1">Unidad</label>
+                            <input type="text" id="manualUnidad" value="und" class="w-full campo-manual border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DINÁMICA DE RECURSOS -->
+                <div class="bloque-imprimible">
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Materiales y Herramientas Utilizados en la Intervención:</label>
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table id="tablaRecursos" class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Tipo</th>
+                                    <th class="p-2.5">Descripción / Elemento</th>
+                                    <th class="p-2.5 text-center">Cantidad</th>
+                                    <th class="p-2.5 text-center">Unidad</th>
+                                    <th class="p-2.5">Origen / Ubicación</th>
+                                    <th class="p-2.5">Observaciones</th>
+                                    <th class="p-2.5 text-center no-print">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaRecursos" class="divide-y divide-slate-200">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN III-B: EPICRISIS TÉCNICA -->
+            <div class="space-y-3">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-notes-medical mr-1.5"></i> Sección III-B: Epicrisis Técnica y Recomendaciones</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Antecedentes de la Red</label>
+                        <textarea id="epiAntecedentes" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hallazgos (Inspección y Mediciones)</label>
+                        <textarea id="epiHallazgos" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tratamiento (Intervención Realizada)</label>
+                        <textarea id="epiTratamiento" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Evolución y Resultado</label>
+                        <textarea id="epiEvolucion" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Condición de Egreso</label>
+                        <textarea id="epiEgreso" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Recomendaciones (Plan Preventivo)</label>
+                        <textarea id="epiRecomendaciones" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN IV: FIRMAS DIGITALES -->
+            <div class="space-y-3 pt-2 bloque-imprimible">
+                <div class="bg-brand-900 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md flex items-center justify-between">
+                    <span><i class="fa-solid fa-signature mr-1.5"></i> Sección IV: Autorización y Firmas Digitales</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Firma Técnico -->
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-700">Técnico Ejecutante</label>
+                                <button type="button" onclick="limpiarCanvas('canvasTecnico')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
+                            </div>
+                            <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
+                                <canvas id="canvasTecnico" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200 text-center">
+                            <p id="firmaNombreTecnico" class="text-xs font-bold text-slate-800 min-h-[16px]"></p>
+                            <p id="firmaCargoTecnico" class="text-[10px] text-slate-500 min-h-[14px]"></p>
+                        </div>
+                    </div>
+
+                    <!-- Autorización Jefe de Mantenimiento -->
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-700">Autorización (Jefe Mantenimiento)</label>
+                                <button type="button" onclick="limpiarCanvas('canvasJefe')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
+                            </div>
+                            <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
+                                <canvas id="canvasJefe" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200 text-center space-y-1">
+                            <select id="nombreJefe" onchange="actualizarFirmasJefes()" class="w-full bg-transparent text-center text-xs font-bold text-slate-800 focus:outline-none">
+                                <!-- Se llena dinámicamente con JavaScript (personal) -->
+                            </select>
+                            <p id="cargoJefe" class="text-[10px] text-slate-500 min-h-[14px]"></p>
+                        </div>
+                    </div>
+
+                    <!-- NUEVO: Liberación Jefe de Área -->
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-700">Liberación (Jefe de Área)</label>
+                                <button type="button" onclick="limpiarCanvas('canvasJefeArea')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
+                            </div>
+                            <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
+                                <canvas id="canvasJefeArea" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200 text-center space-y-1">
+                            <select id="nombreJefeArea" onchange="actualizarFirmasJefes()" class="w-full bg-transparent text-center text-xs font-bold text-slate-800 focus:outline-none">
+                                <!-- Se llena dinámicamente con JavaScript (personal) -->
+                            </select>
+                            <p id="cargoJefeArea" class="text-[10px] text-slate-500 min-h-[14px]"></p>
+                        </div>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-700">Cliente Recibe</label>
+                                <button type="button" onclick="limpiarCanvas('canvasCliente')" class="no-print text-[11px] text-rose-600 hover:text-rose-800 font-medium">Limpiar</button>
+                            </div>
+                            <div class="bg-white border border-dashed border-slate-300 rounded-lg overflow-hidden signature-pad">
+                                <canvas id="canvasCliente" width="300" height="110" class="w-full h-24 signature-canvas"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200 space-y-1">
+                            <input type="text" id="nombreCliente" placeholder="Nombre de quien recibe" class="w-full bg-transparent border-b border-slate-300 text-center text-xs font-bold text-slate-800 focus:outline-none">
+                            <label class="block text-center text-[10px] text-slate-500">Fecha de término</label>
+                            <input type="date" id="fechaTermino" class="w-full bg-transparent text-center text-[10px] text-slate-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400">
+                <p>NOVA NET S.A.S. — Sistema Integrado de Gestión de Órdenes de Mantenimiento con Base de Datos de Inventario Oficial.</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal Notificación -->
+    <div id="modalNotificacion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center no-print z-50">
+        <div class="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full text-center space-y-4 border border-slate-100">
+            <div id="modalIcono" class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 mx-auto flex items-center justify-center text-xl">
+                <i class="fa-solid fa-info"></i>
+            </div>
+            <h3 id="modalTitulo" class="font-bold text-slate-800 text-base">Notificación</h3>
+            <p id="modalMensaje" class="text-xs text-slate-600 leading-relaxed">Mensaje del sistema...</p>
+            <button onclick="cerrarModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 rounded-xl transition">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- ARCHIVOS JS NUEVOS (orden importante) -->
+    <script src="js/datos.js"></script>
+    <script src="js/xlsx-mini.js"></script>
+    <script src="js/exportar-excel.js"></script>
+
+    <!-- LOGICA Y SCRIPTS JAVASCRIPT -->
+    <script>
+        // Las bases de datos (inventario, personal, clientes) y los casos ahora viven en js/datos.js
+        let recursosSeleccionados = [];
+        let medicionesLista = [];
+
+        const $ = id => document.getElementById(id);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            poblarSelectInventario();
+            poblarSelectTecnico();
+            poblarSelectsJefes();
+            poblarSelectCliente();
+            poblarSelectTipoRed();
+            initSignatureCanvas('canvasTecnico');
+            initSignatureCanvas('canvasJefe');
+            initSignatureCanvas('canvasJefeArea');
+            initSignatureCanvas('canvasCliente');
+
+            // El badge de estado se actualiza al cambiar el select
+            $('estadoOrden').addEventListener('change', actualizarBadgeEstado);
+            // Autoajuste de altura de los cuadros de texto (para que se imprima todo el contenido)
+            document.querySelectorAll('textarea').forEach(t => t.addEventListener('input', () => ajustarTextarea(t)));
+
+            // Al abrir se carga el caso Correctivo (igual que antes se abría con el estudio de caso)
+            aplicarCaso(CASO_CORRECTIVO);
+        });
+
+        // ------------------------------------------------------------------
+        // POBLAR SELECTS
+        // ------------------------------------------------------------------
+        function poblarSelectInventario() {
+            const select = $('selectInventarioBD');
+            select.innerHTML = "";
+            baseDatosInventario.forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `[${item.tipo}] ${item.nombre} (${item.unidad})`;
+                select.appendChild(opt);
+            });
+            const otro = document.createElement('option');
+            otro.value = "__otro__";
+            otro.textContent = "✎ Otro material (escribir manualmente)";
+            select.appendChild(otro);
+        }
+
+        function opcionesPersonal(conIdEnTexto) {
+            let html = '<option value="">Seleccione...</option>';
+            Object.keys(personalTelecom).forEach(id => {
+                const p = personalTelecom[id];
+                const txt = conIdEnTexto ? `${id} - ${p.nombre}${p.cargo ? ' (' + p.cargo + ')' : ''}` : `${p.nombre}${p.cargo ? ' — ' + p.cargo : ''}`;
+                html += `<option value="${id}">${txt}</option>`;
+            });
+            return html;
+        }
+
+        function poblarSelectTecnico() { $('selectTecnico').innerHTML = opcionesPersonal(true); }
+        function poblarSelectsJefes() {
+            $('nombreJefe').innerHTML = opcionesPersonal(false);
+            $('nombreJefeArea').innerHTML = opcionesPersonal(false);
+        }
+
+        function poblarSelectCliente() {
+            let html = '<option value="">Seleccione...</option>';
+            Object.keys(clientesBD).forEach(id => { html += `<option value="${id}">${clientesBD[id].nombre}</option>`; });
+            html += '<option value="__otro__">✎ Otro cliente (escribir manualmente)</option>';
+            $('selectCliente').innerHTML = html;
+        }
+
+        function poblarSelectTipoRed() {
+            $('tipoRed').innerHTML = '<option value="">Seleccione...</option>' +
+                TIPOS_RED.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
+
+        // ------------------------------------------------------------------
+        // INVENTARIO / MATERIALES
+        // ------------------------------------------------------------------
+        function alternarMaterialManual() {
+            const manual = $('selectInventarioBD').value === "__otro__";
+            $('materialManual').classList.toggle('hidden', !manual);
+            $('materialManual').classList.toggle('grid', manual);
+        }
+
+        function agregarElementoDesdeBD() {
+            const selectValue = $('selectInventarioBD').value;
+            const cantidad = parseInt($('cantidadBD').value) || 1;
+            let itemBD;
+
+            if (selectValue === "__otro__") {
+                const nombre = $('manualNombre').value.trim();
+                if (!nombre) {
+                    mostrarModal("Falta la descripción", "Escriba la descripción del material que desea agregar.", "fa-triangle-exclamation", "text-amber-600 bg-amber-100");
+                    return;
+                }
+                itemBD = { tipo: $('manualTipo').value, nombre: nombre, unidad: $('manualUnidad').value.trim() || "und", origen: "Ingreso manual" };
+                $('manualNombre').value = "";
+            } else {
+                itemBD = baseDatosInventario[selectValue];
+            }
+
+            // Verificar si ya existe para sumar la cantidad
+            const existente = recursosSeleccionados.find(r => r.nombre === itemBD.nombre);
+            if (existente) {
+                existente.cantidad += cantidad;
+            } else {
+                recursosSeleccionados.push({
+                    tipo: itemBD.tipo,
+                    nombre: itemBD.nombre,
+                    cantidad: cantidad,
+                    unidad: itemBD.unidad,
+                    origen: itemBD.origen,
+                    observacion: ""
+                });
+            }
+            actualizarTablaRecursos();
+            mostrarModal("Elemento Añadido", `Se agregó "${itemBD.nombre}" a la lista de recursos de la orden.`, "fa-circle-check", "text-brand-600 bg-brand-100");
+        }
+
+        function eliminarElementoRecurso(index) {
+            recursosSeleccionados.splice(index, 1);
+            actualizarTablaRecursos();
+        }
+
+        function actualizarTablaRecursos() {
+            const tbody = $('cuerpoTablaRecursos');
+            tbody.innerHTML = "";
+            if (recursosSeleccionados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">No hay elementos agregados. Utilice el buscador superior para añadir materiales o herramientas.</td></tr>`;
+                return;
+            }
+
+            recursosSeleccionados.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2.5 font-medium">${item.tipo}</td>
+                    <td class="p-2.5">${item.nombre}</td>
+                    <td class="p-2.5 text-center font-bold">${item.cantidad}</td>
+                    <td class="p-2.5 text-center">${item.unidad}</td>
+                    <td class="p-2.5 text-slate-500">${item.origen}</td>
+                    <td class="p-1.5"><input type="text" class="tabla-input" placeholder="Observación" value="${escaparAttr(item.observacion || '')}" oninput="recursosSeleccionados[${index}].observacion = this.value"></td>
+                    <td class="p-2.5 text-center no-print">
+                        <button type="button" onclick="eliminarElementoRecurso(${index})" class="text-rose-600 hover:text-rose-800 p-1 rounded transition" title="Eliminar elemento">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function escaparAttr(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // ------------------------------------------------------------------
+        // MEDICIONES ANTES / DESPUÉS
+        // ------------------------------------------------------------------
+        function agregarMedicion() {
+            medicionesLista.push({ parametro: "", unidad: "", antes: "", despues: "", observacion: "" });
+            actualizarTablaMediciones();
+        }
+
+        function cargarMedicionesTipicas() {
+            [
+                { parametro: "Nivel de RF (tap más lejano)", unidad: "dBmV" },
+                { parametro: "MER", unidad: "dB" },
+                { parametro: "Pérdida de retorno", unidad: "dB" },
+                { parametro: "Fuga de señal", unidad: "Sí / No" }
+            ].forEach(p => {
+                if (!medicionesLista.some(m => m.parametro === p.parametro))
+                    medicionesLista.push({ ...p, antes: "", despues: "", observacion: "" });
+            });
+            actualizarTablaMediciones();
+        }
+
+        function eliminarMedicion(index) {
+            medicionesLista.splice(index, 1);
+            actualizarTablaMediciones();
+        }
+
+        function actualizarTablaMediciones() {
+            const tbody = $('cuerpoTablaMediciones');
+            tbody.innerHTML = "";
+            if (medicionesLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Sin mediciones. Use "Agregar medición" o "Parámetros típicos (Red Coaxial)".</td></tr>`;
+                return;
+            }
+            medicionesLista.forEach((m, i) => {
+                const campo = (k, ph, extra) => `<input type="text" class="tabla-input ${extra || ''}" placeholder="${ph}" value="${escaparAttr(m[k] || '')}" oninput="medicionesLista[${i}].${k} = this.value">`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-1.5">${campo('parametro', 'Parámetro')}</td>
+                    <td class="p-1.5">${campo('unidad', 'Unidad')}</td>
+                    <td class="p-1.5">${campo('antes', 'Antes', 'text-center')}</td>
+                    <td class="p-1.5">${campo('despues', 'Después', 'text-center')}</td>
+                    <td class="p-1.5">${campo('observacion', 'Observación')}</td>
+                    <td class="p-2.5 text-center no-print">
+                        <button type="button" onclick="eliminarMedicion(${i})" class="text-rose-600 hover:text-rose-800 p-1 rounded transition" title="Eliminar medición">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ------------------------------------------------------------------
+        // TÉCNICO / PERSONAL
+        // ------------------------------------------------------------------
+        function actualizarDatosTecnico() {
+            const val = $('selectTecnico').value;
+            const t = personalTelecom[val];
+            const v = t || { nombre: "", celular: "", cargo: "", cedula: "", especialidad: "", tipo: "", empresa: "" };
+            $('nombreTecnico').value = v.nombre;
+            $('celularTecnico').value = v.celular;
+            $('cargoTecnico').value = v.cargo;
+            $('cedulaTecnico').value = v.cedula;
+            $('especialidadTecnico').value = v.especialidad;
+            $('empresaTecnico').value = v.empresa;
+            $('internoExterno').value = v.tipo;   // sugerido según el técnico, pero se puede cambiar
+            $('firmaNombreTecnico').innerText = v.nombre;
+            $('firmaCargoTecnico').innerText = v.cargo;
+            // Proveedor externo: si el técnico es externo, se toma su empresa
+            if (t) $('proveedorExterno').value = (t.tipo === 'Externo') ? t.empresa : "No aplica (Personal Interno NOVA NET)";
+        }
+
+        // Al cambiar Interno/Externo manualmente se ajusta el proveedor externo
+        function cambiarInternoExterno() {
+            const tipo = $('internoExterno').value;
+            if (tipo === 'Interno') $('proveedorExterno').value = "No aplica (Personal Interno NOVA NET)";
+            else if (tipo === 'Externo') $('proveedorExterno').value = ($('empresaTecnico').value && $('empresaTecnico').value !== 'Interno') ? $('empresaTecnico').value : "";
+        }
+
+        function actualizarFirmasJefes() {
+            const jm = personalTelecom[$('nombreJefe').value];
+            const ja = personalTelecom[$('nombreJefeArea').value];
+            $('cargoJefe').innerText = jm ? jm.cargo : "";
+            $('cargoJefeArea').innerText = ja ? ja.cargo : "";
+        }
+
+        // ------------------------------------------------------------------
+        // CLIENTE
+        // ------------------------------------------------------------------
+        const CAMPOS_CLIENTE = { cliNit: 'nit', cliContrato: 'contrato', cliServicio: 'servicio', cliDireccion: 'direccion',
+                                 cliBarrio: 'barrio', cliMunicipio: 'municipio', cliContacto: 'contacto', cliTelefono: 'telefono', cliCorreo: 'correo' };
+
+        function actualizarDatosCliente() {
+            const val = $('selectCliente').value;
+            const manual = val === "__otro__";
+            const c = clientesBD[val];
+            $('clienteManual').classList.toggle('hidden', !manual);
+            Object.keys(CAMPOS_CLIENTE).forEach(id => {
+                const el = $(id);
+                el.value = c ? c[CAMPOS_CLIENTE[id]] : "";
+                el.readOnly = !manual;
+                el.classList.toggle('campo-auto', !manual);
+                el.classList.toggle('campo-manual', manual);
+            });
+            if (!manual) $('clienteManual').value = "";
+            // Quien recibe por parte del cliente: por defecto, la persona de contacto
+            $('nombreCliente').value = c ? c.contacto : "";
+        }
+
+        // ------------------------------------------------------------------
+        // ESTADO
+        // ------------------------------------------------------------------
+        function actualizarBadgeEstado() {
+            const estado = $('estadoOrden').value || "Abierta";
+            const colores = {
+                "Abierta": "bg-blue-100 text-blue-800",
+                "En Proceso": "bg-amber-100 text-amber-800",
+                "Cerrada": "bg-emerald-100 text-emerald-800"
+            };
+            $('badgeEstado').innerText = estado;
+            $('badgeEstado').className = "inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full " + (colores[estado] || colores["Abierta"]);
+        }
+
+        function ajustarTextarea(t) {
+            t.style.height = 'auto';
+            t.style.height = (t.scrollHeight + 2) + 'px';
+        }
+
+        // ------------------------------------------------------------------
+        // APLICAR UN CASO (correctivo / preventivo / en blanco) AL FORMULARIO
+        // ------------------------------------------------------------------
+        function aplicarCaso(c) {
+            const set = (id, val) => { $(id).value = val || ""; };
+
+            set('numOrden', c.numOrden);
+            set('folioSolicitud', c.folio);
+            set('tipoMantenimiento', c.tipoMantenimiento);
+            set('tipoArea', c.tipoArea);
+            set('medioTransmision', c.medioTransmision);
+            set('clasificacionMantenimiento', c.clasificacion);
+            set('fechaEmision', c.fechaEmision);
+            set('fechaProgramacion', c.fechaProgramacion);
+            set('estadoOrden', c.estado || "Abierta");
+            actualizarBadgeEstado();
+
+            set('selectTecnico', c.tecnicoId);
+            actualizarDatosTecnico();
+
+            set('selectCliente', c.clienteId);
+            actualizarDatosCliente();
+
+            set('tipoRed', c.tipoRed);
+            set('medioEspecificacion', c.medioEspecificacion);
+            set('lugarTrabajo', c.lugarTrabajo);
+            set('elementoIntervenido', c.elementoIntervenido);
+            set('proveedorExterno', c.proveedorExterno);
+            set('motivoSolicitud', c.motivo);
+            set('diagnosticoMantenimiento', c.diagnostico);
+            set('actividadesRealizadas', c.actividades);
+
+            medicionesLista = (c.mediciones || []).map(m => ({ ...m }));
+            actualizarTablaMediciones();
+            recursosSeleccionados = (c.recursos || []).map(r => ({ ...r }));
+            actualizarTablaRecursos();
+
+            set('epiAntecedentes', c.epiAntecedentes);
+            set('epiHallazgos', c.epiHallazgos);
+            set('epiTratamiento', c.epiTratamiento);
+            set('epiEvolucion', c.epiEvolucion);
+            set('epiEgreso', c.epiEgreso);
+            set('epiRecomendaciones', c.epiRecomendaciones);
+
+            set('nombreJefe', c.jefeMantId);
+            set('nombreJefeArea', c.jefeAreaId);
+            actualizarFirmasJefes();
+            set('fechaTermino', c.fechaTermino);
+
+            // Reiniciar selector manual de materiales
+            $('selectInventarioBD').selectedIndex = 0;
+            alternarMaterialManual();
+
+            // Las firmas pertenecen a cada documento: se limpian al cambiar de orden
+            ['canvasTecnico', 'canvasJefe', 'canvasJefeArea', 'canvasCliente'].forEach(limpiarCanvas);
+            document.querySelectorAll('textarea').forEach(ajustarTextarea);
+        }
+
+        // MACRO: ESTUDIO DE CASO - CORRECTIVO (Red Coaxial Externa, OT-2026-0087)
+        function cargarNuevoEstudioCaso() {
+            aplicarCaso(CASO_CORRECTIVO);
+            mostrarModal("Correctivo Cargado", "Se cargó el estudio de caso: falla intermitente en troncal coaxial externa .500, Nodo N-07 (OT-2026-0087 / SOL-2026-0145).", "fa-screwdriver-wrench", "text-indigo-600 bg-indigo-100");
+        }
+
+        // MACRO: PREVENTIVO (Red Coaxial Externa, OT-2026-0088)
+        function cargarPlantillaPreventiva() {
+            aplicarCaso(CASO_PREVENTIVO);
+            mostrarModal("Preventivo Cargado", "Se cargó el mantenimiento preventivo del Nodo N-07, red coaxial externa (OT-2026-0088 / SOL-2026-0146). Las mediciones quedan en blanco con su valor de referencia.", "fa-shield-halved", "text-emerald-600 bg-emerald-100");
+        }
+
+        // MACRO: PLANTILLA EN BLANCO (sin ninguna información)
+        function plantillaEnBlanco() {
+            aplicarCaso(CASO_VACIO);
+            mostrarModal("Plantilla en Blanco", "La orden de trabajo quedó sin información, lista para diligenciar desde cero.", "fa-file", "text-slate-600 bg-slate-100");
+        }
+
+        function exportarPDF() {
+            window.print();
+        }
+
+        function initSignatureCanvas(canvasId) {
+            const canvas = $(canvasId);
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                // Se escala porque el canvas se muestra con un tamaño distinto a su resolución interna
+                return {
+                    x: (clientX - rect.left) * (canvas.width / rect.width),
+                    y: (clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+            canvas.addEventListener('mousedown', (e) => { isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+            canvas.addEventListener('mousemove', (e) => { if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseleave', () => isDrawing = false);
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+            canvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+        }
+
+        function limpiarCanvas(canvasId) {
+            const canvas = $(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // "Limpiar": reinicia el formato conservando el tipo de mantenimiento ya elegido
+        // y generando un nuevo número de control consecutivo de ejemplo
+        function limpiarFormulario() {
+            const tipo = $('tipoMantenimiento').value;
+            aplicarCaso(CASO_VACIO);
+            $('tipoMantenimiento').value = tipo;
+            const prefijo = tipo === 'Preventivo' ? "OT-FO-P-2026-" : "OT-FO-C-2026-";
+            $('numOrden').value = prefijo + Math.floor(100 + Math.random() * 900);
+            mostrarModal("Formulario Limpio", "Se ha reiniciado el formato.", "fa-rotate-right", "text-slate-600 bg-slate-100");
+        }
+
+        function mostrarModal(titulo, mensaje, iconoClass, colorClass) {
+            $('modalTitulo').innerText = titulo;
+            $('modalMensaje').innerText = mensaje;
+            const iconoContenedor = $('modalIcono');
+            iconoContenedor.className = `w-12 h-12 rounded-full mx-auto flex items-center justify-center text-xl ${colorClass}`;
+            iconoContenedor.innerHTML = `<i class="fa-solid ${iconoClass}"></i>`;
+            $('modalNotificacion').classList.remove('hidden');
+            $('modalNotificacion').classList.add('flex');
+        }
+
+        function cerrarModal() {
+            $('modalNotificacion').classList.add('hidden');
+            $('modalNotificacion').classList.remove('flex');
+        }
+    </script>
+
+    <!-- Script de Analítica GoatCounter -->
+    <script data-goatcounter="https://novanet-ot.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
